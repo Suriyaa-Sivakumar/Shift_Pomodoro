@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page
+    x:Class="FlowWindows_App.Pages.TimerPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Padding="24,18" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Top Bar: Window Title & Top Right Icons (Reset, Stats, Menu) -->
+        <Grid Grid.Row="0">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
+                <Image Source="ms-appx:///Assets/Square44x44Logo.scale-200.png"
+                       Width="20" Height="20"
+                       VerticalAlignment="Center" />
+                <TextBlock Text="Shift - Pomodoro" FontSize="13" FontWeight="SemiBold" Opacity="0.85" VerticalAlignment="Center" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="4" VerticalAlignment="Center">
+                <!-- Reset Button -->
+                <Button x:Name="ResetButton"
+                        Width="32" Height="32" Padding="0"
+                        CornerRadius="16" Background="Transparent" BorderThickness="0"
+                        ToolTipService.ToolTip="Reset Timer"
+                        Click="OnResetClicked">
+                    <FontIcon Glyph="&#xE72C;" FontSize="13" />
+                </Button>
+
+                <!-- Statistics Button -->
+                <Button x:Name="StatsButton"
+                        Width="32" Height="32" Padding="0"
+                        CornerRadius="16" Background="Transparent" BorderThickness="0"
+                        ToolTipService.ToolTip="Statistics"
+                        Click="OnStatsClicked">
+                    <FontIcon Glyph="&#xE9D9;" FontSize="13" />
+                </Button>
+
+                <!-- More Menu Button -->
+                <Button x:Name="MoreMenuButton"
+                        Width="32" Height="32" Padding="0"
+                        CornerRadius="16" Background="Transparent" BorderThickness="0"
+                        ToolTipService.ToolTip="Menu"
+                        Click="OnMoreMenuClicked">
+                    <FontIcon Glyph="&#xE712;" FontSize="13" />
+
+                    <Button.Flyout>
+                        <MenuFlyout x:Name="MoreMenuFlyout">
+                            <MenuFlyoutSubItem Text="Shift Duration">
+                                <MenuFlyoutItem Text="15 minutes" Tag="15" Click="OnDurationPresetClicked" />
+                                <MenuFlyoutItem Text="20 minutes" Tag="20" Click="OnDurationPresetClicked" />
+                                <MenuFlyoutItem Text="25 minutes" Tag="25" Click="OnDurationPresetClicked" />
+                                <MenuFlyoutItem Text="30 minutes" Tag="30" Click="OnDurationPresetClicked" />
+                                <MenuFlyoutItem Text="45 minutes" Tag="45" Click="OnDurationPresetClicked" />
+                                <MenuFlyoutItem Text="50 minutes" Tag="50" Click="OnDurationPresetClicked" />
+                                <MenuFlyoutItem Text="60 minutes" Tag="60" Click="OnDurationPresetClicked" />
+                                <MenuFlyoutItem Text="90 minutes" Tag="90" Click="OnDurationPresetClicked" />
+                            </MenuFlyoutSubItem>
+
+                            <MenuFlyoutSubItem Text="Break Duration">
+                                <MenuFlyoutItem Text="Short Break (5m)" Tag="5" Click="OnBreakDurationClicked" />
+                                <MenuFlyoutItem Text="Short Break (10m)" Tag="10" Click="OnBreakDurationClicked" />
+                                <MenuFlyoutItem Text="Long Break (15m)" Tag="15" Click="OnLongBreakDurationClicked" />
+                                <MenuFlyoutItem Text="Long Break (20m)" Tag="20" Click="OnLongBreakDurationClicked" />
+                                <MenuFlyoutItem Text="Long Break (30m)" Tag="30" Click="OnLongBreakDurationClicked" />
+                            </MenuFlyoutSubItem>
+
+                            <MenuFlyoutSubItem Text="Session Cycles">
+                                <MenuFlyoutItem Text="2 Sessions" Tag="2" Click="OnCyclesPresetClicked" />
+                                <MenuFlyoutItem Text="4 Sessions (Standard)" Tag="4" Click="OnCyclesPresetClicked" />
+                                <MenuFlyoutItem Text="6 Sessions" Tag="6" Click="OnCyclesPresetClicked" />
+                                <MenuFlyoutItem Text="8 Sessions" Tag="8" Click="OnCyclesPresetClicked" />
+                            </MenuFlyoutSubItem>
+
+                            <MenuFlyoutSubItem Text="Auto-Start">
+                                <ToggleMenuFlyoutItem x:Name="AutoStartBreaksItem" Text="Auto-Start Breaks" Click="OnToggleAutoStartBreaks" />
+                                <ToggleMenuFlyoutItem x:Name="AutoStartFocusItem" Text="Auto-Start Shifts" Click="OnToggleAutoStartFocus" />
+                            </MenuFlyoutSubItem>
+
+                            <MenuFlyoutSeparator />
+
+                            <MenuFlyoutItem Text="Tasks &amp; Action Items" Click="OnNavigateTasksClicked">
+                                <MenuFlyoutItem.Icon><FontIcon Glyph="&#xE762;" /></MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutItem Text="Study Planner" Click="OnNavigateStudyPlannerClicked">
+                                <MenuFlyoutItem.Icon><FontIcon Glyph="&#xE82D;" /></MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutItem Text="Insights &amp; Goals" Click="OnNavigateInsightsClicked">
+                                <MenuFlyoutItem.Icon><FontIcon Glyph="&#xE782;" /></MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutItem Text="Statistics" Click="OnNavigateStatisticsClicked">
+                                <MenuFlyoutItem.Icon><FontIcon Glyph="&#xE9D9;" /></MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutItem Text="Settings" Click="OnNavigateSettingsClicked">
+                                <MenuFlyoutItem.Icon><FontIcon Glyph="&#xE713;" /></MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+
+                            <MenuFlyoutSeparator />
+
+                            <MenuFlyoutItem Text="Mini Timer" Click="OnToggleMiniTimerClicked">
+                                <MenuFlyoutItem.Icon><FontIcon Glyph="&#xE737;" /></MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutItem Text="About Shift - Pomodoro" Click="OnAboutClicked">
+                                <MenuFlyoutItem.Icon><FontIcon Glyph="&#xE946;" /></MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutItem Text="Quit" Click="OnQuitClicked">
+                                <MenuFlyoutItem.Icon><FontIcon Glyph="&#xE711;" /></MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <!-- Center: Flow Timer Experience -->
+        <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="16">
+            <!-- Commitment Mode Alert Banner (if strict) -->
+            <Border x:Name="CommitmentBanner"
+                    Background="#26FF5252"
+                    BorderBrush="#FF5252"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="12,5"
+                    HorizontalAlignment="Center"
+                    Visibility="Collapsed">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <FontIcon Glyph="&#xE72E;" Foreground="#FF5252" FontSize="12" />
+                    <TextBlock Text="Commitment Mode Active" FontSize="11" Foreground="#FF5252" FontWeight="SemiBold" />
+                </StackPanel>
+            </Border>
+
+            <!-- Session Title + Edit Button -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
+                <TextBlock x:Name="SessionTitleText"
+                           Text="Shift"
+                           FontSize="18"
+                           FontWeight="Medium"
+                           VerticalAlignment="Center" />
+
+                <!-- Edit Pencil Flyout -->
+                <Button x:Name="EditSessionButton"
+                        Width="28" Height="28" Padding="0"
+                        CornerRadius="14" Background="Transparent" BorderThickness="0"
+                        VerticalAlignment="Center">
+                    <FontIcon Glyph="&#xE70F;" FontSize="11" Opacity="0.6" />
+                    <Button.Flyout>
+                        <Flyout x:Name="EditSessionFlyout">
+                            <StackPanel Width="240" Spacing="10">
+                                <TextBlock Text="Session Details" FontWeight="SemiBold" FontSize="14" />
+                                <TextBox x:Name="CustomSessionTitleBox" Header="Title" PlaceholderText="Shift name..." />
+                                <ComboBox x:Name="TagComboBox" Header="Tag" PlaceholderText="Select tag..." HorizontalAlignment="Stretch" SelectionChanged="OnTagSelectionChanged">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <Ellipse Width="8" Height="8" Fill="{Binding ColorHex}" />
+                                                <TextBlock Text="{Binding Name}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                                <ComboBox x:Name="TaskComboBox" Header="Linked Task" PlaceholderText="Link active task..." HorizontalAlignment="Stretch" SelectionChanged="OnTaskSelectionChanged">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                                <Button Content="Apply" HorizontalAlignment="Right" Click="OnApplySessionDetailsClicked" />
+                            </StackPanel>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+            </StackPanel>
+
+            <!-- Huge Crisp Timer Digits -->
+            <TextBlock x:Name="TimeDisplay"
+                       Text="25:00"
+                       FontSize="76"
+                       FontWeight="SemiBold"
+                       HorizontalAlignment="Center"
+                       TextAlignment="Center"
+                       FontFamily="Segoe UI Variable Display, Segoe UI, sans-serif"
+                       CharacterSpacing="-20" />
+
+            <!-- Cycle Indicator: < ● ▬ ● ● > -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="8">
+                <Button x:Name="PrevCycleBtn"
+                        Width="24" Height="24" Padding="0"
+                        CornerRadius="12" Background="Transparent" BorderThickness="0"
+                        ToolTipService.ToolTip="Previous Cycle"
+                        Click="OnPrevCycleClicked">
+                    <FontIcon Glyph="&#xE76B;" FontSize="9" Opacity="0.5" />
+                </Button>
+
+                <StackPanel x:Name="CycleDotsPanel" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                    <!-- Dots dynamically populated in code-behind -->
+                </StackPanel>
+
+                <Button x:Name="NextCycleBtn"
+                        Width="24" Height="24" Padding="0"
+                        CornerRadius="12" Background="Transparent" BorderThickness="0"
+                        ToolTipService.ToolTip="Next Cycle"
+                        Click="OnNextCycleClicked">
+                    <FontIcon Glyph="&#xE76C;" FontSize="9" Opacity="0.5" />
+                </Button>
+            </StackPanel>
+
+            <!-- Play / Pause Action Button (Signature Flow Green) -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16" Margin="0,4,0,0">
+                <!-- Skip Button -->
+                <Button x:Name="SkipButton"
+                        Width="36" Height="36" Padding="0"
+                        CornerRadius="18" Background="Transparent" BorderThickness="0"
+                        ToolTipService.ToolTip="Skip to next session"
+                        Click="OnSkipClicked">
+                    <FontIcon Glyph="&#xE893;" FontSize="14" Opacity="0.65" />
+                </Button>
+
+                <!-- Center Large Play / Pause -->
+                <Button x:Name="PlayPauseButton"
+                        Width="60" Height="60" Padding="0"
+                        CornerRadius="30"
+                        Background="{ThemeResource ShiftFlowGreenMutedBrush}"
+                        BorderBrush="Transparent"
+                        Click="OnPlayPauseClicked">
+                    <FontIcon x:Name="PlayPauseIcon"
+                              Glyph="&#xE768;"
+                              FontSize="22"
+                              Foreground="{ThemeResource ShiftFlowGreenBrush}" />
+                </Button>
+
+                <!-- Placeholder for symmetry -->
+                <Border Width="36" Height="36" Background="Transparent" />
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Bottom Mode Selector: [ Shift | Short Break | Long Break ] -->
+        <Border Grid.Row="2"
+                Background="{ThemeResource ShiftSubtleBgBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="16"
+                Padding="3"
+                HorizontalAlignment="Center"
+                Margin="0,0,0,4">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+                <Button x:Name="ModeFocusBtn" Content="Shift" CornerRadius="13" Padding="14,4" Click="OnModeFocusClicked" />
+                <Button x:Name="ModeShortBreakBtn" Content="Short Break" CornerRadius="13" Padding="14,4" Click="OnModeShortBreakClicked" />
+                <Button x:Name="ModeLongBreakBtn" Content="Long Break" CornerRadius="13" Padding="14,4" Click="OnModeLongBreakClicked" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</Page>

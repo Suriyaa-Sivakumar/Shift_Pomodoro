@@ -1,0 +1,85 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8C1302A3-BA2C-4C55-9A38-53B39746FDEF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlowWindows.App", "src\FlowWindows.App\FlowWindows.App.csproj", "{9AD66CA9-BE75-4A82-B367-52136E5BA598}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlowWindows.Core", "src\FlowWindows.Core\FlowWindows.Core.csproj", "{78EE9322-58A9-4226-808B-194CB0141C26}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlowWindows.Data", "src\FlowWindows.Data\FlowWindows.Data.csproj", "{E85C6D71-531C-40B1-A80C-9AB41AAE28A5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlowWindows.Timer", "src\FlowWindows.Timer\FlowWindows.Timer.csproj", "{E019DB9E-4455-49D3-A81B-9EF02E1A2EB3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlowWindows.WindowsIntegration", "src\FlowWindows.WindowsIntegration\FlowWindows.WindowsIntegration.csproj", "{B8B0641E-CAAE-47A9-B0D6-B5DF76FBCD31}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlowWindows.Analytics", "src\FlowWindows.Analytics\FlowWindows.Analytics.csproj", "{443C956D-1804-4AA4-AD27-003CFD81B53A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlowWindows.StudyPlanner", "src\FlowWindows.StudyPlanner\FlowWindows.StudyPlanner.csproj", "{06D3A947-358C-4C30-93A9-A32CBF09F09C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlowWindows.TaskManagement", "src\FlowWindows.TaskManagement\FlowWindows.TaskManagement.csproj", "{12963BC8-AB6F-4944-BC82-A96A24094489}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{BB9CA54D-06C0-4736-87E1-29D800EA9552}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlowWindows.UnitTests", "tests\FlowWindows.UnitTests\FlowWindows.UnitTests.csproj", "{9C2AA137-75B1-4410-B255-20C45987236A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9AD66CA9-BE75-4A82-B367-52136E5BA598}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{9AD66CA9-BE75-4A82-B367-52136E5BA598}.Debug|Any CPU.Build.0 = Debug|x64
+		{9AD66CA9-BE75-4A82-B367-52136E5BA598}.Release|Any CPU.ActiveCfg = Release|x64
+		{9AD66CA9-BE75-4A82-B367-52136E5BA598}.Release|Any CPU.Build.0 = Release|x64
+		{78EE9322-58A9-4226-808B-194CB0141C26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78EE9322-58A9-4226-808B-194CB0141C26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78EE9322-58A9-4226-808B-194CB0141C26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78EE9322-58A9-4226-808B-194CB0141C26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E85C6D71-531C-40B1-A80C-9AB41AAE28A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E85C6D71-531C-40B1-A80C-9AB41AAE28A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E85C6D71-531C-40B1-A80C-9AB41AAE28A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E85C6D71-531C-40B1-A80C-9AB41AAE28A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E019DB9E-4455-49D3-A81B-9EF02E1A2EB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E019DB9E-4455-49D3-A81B-9EF02E1A2EB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E019DB9E-4455-49D3-A81B-9EF02E1A2EB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E019DB9E-4455-49D3-A81B-9EF02E1A2EB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8B0641E-CAAE-47A9-B0D6-B5DF76FBCD31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8B0641E-CAAE-47A9-B0D6-B5DF76FBCD31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8B0641E-CAAE-47A9-B0D6-B5DF76FBCD31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8B0641E-CAAE-47A9-B0D6-B5DF76FBCD31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{443C956D-1804-4AA4-AD27-003CFD81B53A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{443C956D-1804-4AA4-AD27-003CFD81B53A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{443C956D-1804-4AA4-AD27-003CFD81B53A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{443C956D-1804-4AA4-AD27-003CFD81B53A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06D3A947-358C-4C30-93A9-A32CBF09F09C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06D3A947-358C-4C30-93A9-A32CBF09F09C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06D3A947-358C-4C30-93A9-A32CBF09F09C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06D3A947-358C-4C30-93A9-A32CBF09F09C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12963BC8-AB6F-4944-BC82-A96A24094489}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12963BC8-AB6F-4944-BC82-A96A24094489}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12963BC8-AB6F-4944-BC82-A96A24094489}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12963BC8-AB6F-4944-BC82-A96A24094489}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C2AA137-75B1-4410-B255-20C45987236A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C2AA137-75B1-4410-B255-20C45987236A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C2AA137-75B1-4410-B255-20C45987236A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C2AA137-75B1-4410-B255-20C45987236A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9AD66CA9-BE75-4A82-B367-52136E5BA598} = {8C1302A3-BA2C-4C55-9A38-53B39746FDEF}
+		{78EE9322-58A9-4226-808B-194CB0141C26} = {8C1302A3-BA2C-4C55-9A38-53B39746FDEF}
+		{E85C6D71-531C-40B1-A80C-9AB41AAE28A5} = {8C1302A3-BA2C-4C55-9A38-53B39746FDEF}
+		{E019DB9E-4455-49D3-A81B-9EF02E1A2EB3} = {8C1302A3-BA2C-4C55-9A38-53B39746FDEF}
+		{B8B0641E-CAAE-47A9-B0D6-B5DF76FBCD31} = {8C1302A3-BA2C-4C55-9A38-53B39746FDEF}
+		{443C956D-1804-4AA4-AD27-003CFD81B53A} = {8C1302A3-BA2C-4C55-9A38-53B39746FDEF}
+		{06D3A947-358C-4C30-93A9-A32CBF09F09C} = {8C1302A3-BA2C-4C55-9A38-53B39746FDEF}
+		{12963BC8-AB6F-4944-BC82-A96A24094489} = {8C1302A3-BA2C-4C55-9A38-53B39746FDEF}
+		{9C2AA137-75B1-4410-B255-20C45987236A} = {BB9CA54D-06C0-4736-87E1-29D800EA9552}
+	EndGlobalSection
+EndGlobal

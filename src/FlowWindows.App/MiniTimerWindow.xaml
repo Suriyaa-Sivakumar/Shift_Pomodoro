@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Window
+    x:Class="FlowWindows_App.MiniTimerWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:FlowWindows_App"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="Shift Mini"
+    mc:Ignorable="d">
+
+    <Window.SystemBackdrop>
+        <MicaBackdrop />
+    </Window.SystemBackdrop>
+
+    <!-- Floating Frameless Capsule Card -->
+    <Border x:Name="RootCard"
+            Background="{ThemeResource ShiftCardBgBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="16"
+            Padding="12,6"
+            PointerPressed="OnRootPointerPressed">
+
+        <Grid VerticalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Left Drag Grip & Label -->
+            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Spacing="6" Margin="0,0,10,0">
+                <Image Source="ms-appx:///Assets/Square44x44Logo.scale-200.png" Width="16" Height="16" VerticalAlignment="Center" />
+                <TextBlock x:Name="MiniLabelText" Text="Shift" FontSize="11" FontWeight="SemiBold" Opacity="0.85" VerticalAlignment="Center" />
+            </StackPanel>
+
+            <!-- Center Time Display & Cycle Dots -->
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="10">
+                <TextBlock x:Name="MiniTimeText"
+                           Text="25:00"
+                           FontSize="20"
+                           FontWeight="Bold"
+                           FontFamily="Segoe UI Variable Display, Segoe UI, sans-serif"
+                           VerticalAlignment="Center" />
+
+                <!-- 4 Cycle Dots -->
+                <StackPanel x:Name="MiniCycleDotsPanel" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                    <!-- Populated in code behind -->
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Right Controls: Green Play/Pause, Skip, Expand to Main, Close -->
+            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Spacing="3" Margin="8,0,0,0">
+                <Button x:Name="MiniPlayPauseButton"
+                        Width="28" Height="28" Padding="0"
+                        CornerRadius="14"
+                        Background="{ThemeResource ShiftFlowGreenMutedBrush}"
+                        BorderBrush="Transparent"
+                        ToolTipService.ToolTip="Start / Pause"
+                        Click="OnPlayPauseClicked">
+                    <FontIcon x:Name="MiniPlayPauseIcon"
+                              Glyph="&#xE768;"
+                              FontSize="11"
+                              Foreground="{ThemeResource ShiftFlowGreenBrush}" />
+                </Button>
+
+                <Button Width="26" Height="26" Padding="0"
+                        CornerRadius="13" Background="Transparent" BorderThickness="0"
+                        ToolTipService.ToolTip="Skip Session"
+                        Click="OnSkipClicked">
+                    <FontIcon Glyph="&#xE893;" FontSize="11" Opacity="0.65" />
+                </Button>
+
+                <Button Width="26" Height="26" Padding="0"
+                        CornerRadius="13" Background="Transparent" BorderThickness="0"
+                        ToolTipService.ToolTip="Open Shift - Pomodoro"
+                        Click="OnOpenMainAppClicked">
+                    <FontIcon Glyph="&#xE740;" FontSize="11" Opacity="0.65" />
+                </Button>
+
+                <Button Width="26" Height="26" Padding="0"
+                        CornerRadius="13" Background="Transparent" BorderThickness="0"
+                        ToolTipService.ToolTip="Close Mini Timer"
+                        Click="OnCloseClicked">
+                    <FontIcon Glyph="&#xE711;" FontSize="10" Opacity="0.65" />
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

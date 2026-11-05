@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "FlowWindows.App (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "FlowWindows.App (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

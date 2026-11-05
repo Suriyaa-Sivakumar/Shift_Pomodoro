@@ -1,0 +1,18 @@
+<Project>
+  <Target Name="GetMrtPackagingOutputs" Returns="@(PackagingOutputs)" />
+  <Target Name="_GetDefaultResourceLanguage">
+    <PropertyGroup>
+      <DefaultResourceLanguage Condition="'$(DefaultResourceLanguage)' == ''">$(DefaultLanguage)</DefaultResourceLanguage>
+    </PropertyGroup>
+  </Target>
+  <Target Name="_GetPriFilesFromPayload" />
+  <Target Name="_ComputeInputPriFiles" />
+  <Target Name="_GenerateProjectPriConfigurationFiles" />
+  <Target Name="_GenerateProjectPriFileCore" />
+  <Target Name="_ExpandPriFiles" />
+  <Target Name="AddPriPayloadFilesToCopyToOutputDirectoryItems" />
+
+  <Target Name="AutoGeneratePriAndStageXbf" AfterTargets="Build">
+    <Exec Command="powershell -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)..\..\build_pri.ps1&quot; -TargetDir &quot;$(TargetDir.TrimEnd('\'))&quot;" />
+  </Target>
+</Project>

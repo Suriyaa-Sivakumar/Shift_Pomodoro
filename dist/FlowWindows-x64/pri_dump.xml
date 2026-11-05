@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PriInfo>
+	<ResourceMap name="Application" version="1.0" primary="true">
+		<Qualifiers>
+			<AlternateForm>LIGHTUNPLATED,UNPLATED</AlternateForm>
+			<TargetSize>24,48</TargetSize>
+		</Qualifiers>
+		<ResourceMapSubtree name="Files">
+			<NamedResource name="app.manifest" uri="ms-resource://Application/Files/app.manifest">
+				<Candidate type="Path">
+					<Value>app.manifest</Value>
+				</Candidate>
+			</NamedResource>
+			<NamedResource name="priconfig.xml" uri="ms-resource://Application/Files/priconfig.xml">
+				<Candidate type="Path">
+					<Value>priconfig.xml</Value>
+				</Candidate>
+			</NamedResource>
+			<ResourceMapSubtree name="Assets">
+				<NamedResource name="AppIcon.ico" uri="ms-resource://Application/Files/Assets/AppIcon.ico">
+					<Candidate type="Path">
+						<Value>Assets\AppIcon.ico</Value>
+					</Candidate>
+				</NamedResource>
+				<NamedResource name="LockScreenLogo.png" uri="ms-resource://Application/Files/Assets/LockScreenLogo.png"/>
+				<NamedResource name="SplashScreen.png" uri="ms-resource://Application/Files/Assets/SplashScreen.png"/>
+				<NamedResource name="Square150x150Logo.png" uri="ms-resource://Application/Files/Assets/Square150x150Logo.png"/>
+				<NamedResource name="Square44x44Logo.png" uri="ms-resource://Application/Files/Assets/Square44x44Logo.png">
+					<Candidate qualifiers="TargetSize-48, AlternateForm-LIGHTUNPLATED" type="Path">
+						<Value>Assets\Square44x44Logo.targetsize-48_altform-lightunplated.png</Value>
+					</Candidate>
+					<Candidate qualifiers="TargetSize-24, AlternateForm-UNPLATED" type="Path">
+						<Value>Assets\Square44x44Logo.targetsize-24_altform-unplated.png</Value>
+					</Candidate>
+				</NamedResource>
+				<NamedResource name="StoreLogo.png" uri="ms-resource://Application/Files/Assets/StoreLogo.png">
+					<Candidate type="Path">
+						<Value>Assets\StoreLogo.png</Value>
+					</Candidate>
+				</NamedResource>
+				<NamedResource name="Wide310x150Logo.png" uri="ms-resource://Application/Files/Assets/Wide310x150Logo.png"/>
+			</ResourceMapSubtree>
+			<ResourceMapSubtree name="src">
+				<ResourceMapSubtree name="FlowWindows.App">
+					<ResourceMapSubtree name="bin">
+						<ResourceMapSubtree name="Release">
+							<ResourceMapSubtree name="net8.0-windows10.0.19041.0">
+								<ResourceMapSubtree name="win-x64">
+									<NamedResource name="App.xbf" uri="ms-resource://Application/Files/src/FlowWindows.App/bin/Release/net8.0-windows10.0.19041.0/win-x64/App.xbf"/>
+									<NamedResource name="MainPage.xbf" uri="ms-resource://Application/Files/src/FlowWindows.App/bin/Release/net8.0-windows10.0.19041.0/win-x64/MainPage.xbf"/>
+									<NamedResource name="MainWindow.xbf" uri="ms-resource://Application/Files/src/FlowWindows.App/bin/Release/net8.0-windows10.0.19041.0/win-x64/MainWindow.xbf"/>
+									<NamedResource name="MiniTimerWindow.xbf" uri="ms-resource://Application/Files/src/FlowWindows.App/bin/Release/net8.0-windows10.0.19041.0/win-x64/MiniTimerWindow.xbf"/>
+									<ResourceMapSubtree name="Controls">
+										<NamedResource name="CircularTimerControl.xbf" uri="ms-resource://Application/Files/src/FlowWindows.App/bin/Release/net8.0-windows10.0.19041.0/win-x64/Controls/CircularTimerControl.xbf"/>
+									</ResourceMapSubtree>
+									<ResourceMapSubtree name="Pages">
+										<NamedResource name="InsightsPage.xbf" uri="ms-resource://Application/Files/src/FlowWindows.App/bin/Release/net8.0-windows10.0.19041.0/win-x64/Pages/InsightsPage.xbf"/>
+										<NamedResource name="SettingsPage.xbf" uri="ms-resource://Application/Files/src/FlowWindows.App/bin/Release/net8.0-windows10.0.19041.0/win-x64/Pages/SettingsPage.xbf"/>
+										<NamedResource name="StatisticsPage.xbf" uri="ms-resource://Application/Files/src/FlowWindows.App/bin/Release/net8.0-windows10.0.19041.0/win-x64/Pages/StatisticsPage.xbf"/>
+										<NamedResource name="StudyPlannerPage.xbf" uri="ms-resource://Application/Files/src/FlowWindows.App/bin/Release/net8.0-windows10.0.19041.0/win-x64/Pages/StudyPlannerPage.xbf"/>
+										<NamedResource name="TasksPage.xbf" uri="ms-resource://Application/Files/src/FlowWindows.App/bin/Release/net8.0-windows10.0.19041.0/win-x64/Pages/TasksPage.xbf"/>
+										<NamedResource name="TimerPage.xbf" uri="ms-resource://Application/Files/src/FlowWindows.App/bin/Release/net8.0-windows10.0.19041.0/win-x64/Pages/TimerPage.xbf"/>
+									</ResourceMapSubtree>
+								</ResourceMapSubtree>
+							</ResourceMapSubtree>
+						</ResourceMapSubtree>
+					</ResourceMapSubtree>
+				</ResourceMapSubtree>
+			</ResourceMapSubtree>
+		</ResourceMapSubtree>
+	</ResourceMap>
+</PriInfo>
