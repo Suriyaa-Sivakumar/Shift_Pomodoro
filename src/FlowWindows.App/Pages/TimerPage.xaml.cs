@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Shapes;
+using FlowWindows.Core.Common;
 using FlowWindows.Core.Enums;
 using FlowWindows.Core.Interfaces;
 using FlowWindows.Core.Models;
@@ -92,7 +93,7 @@ public sealed partial class TimerPage : Page
     {
         DispatcherQueue.TryEnqueue(() =>
         {
-            TimeDisplay.Text = $"{e.RemainingTime:mm\\:ss}";
+            TimeDisplay.Text = TimeFormatHelper.FormatTimer(e.RemainingTime);
             PlayPauseIcon.Glyph = e.State == SessionState.Running ? "\uE769" : "\uE768";
             UpdateSessionTitle();
             RenderCycleDots(e.CurrentCycleSession, e.SessionsBeforeLongBreak);
@@ -115,7 +116,7 @@ public sealed partial class TimerPage : Page
     {
         if (_timerEngine == null) return;
 
-        TimeDisplay.Text = $"{_timerEngine.RemainingTime:mm\\:ss}";
+        TimeDisplay.Text = TimeFormatHelper.FormatTimer(_timerEngine.RemainingTime);
         PlayPauseIcon.Glyph = _timerEngine.State == SessionState.Running ? "\uE769" : "\uE768";
 
         UpdateSessionTitle();
@@ -335,6 +336,7 @@ public sealed partial class TimerPage : Page
                     _settings.FocusMinutes = minutes;
                     _ = _repository.SaveSettingsAsync(_settings);
                 }
+                _timerEngine.SyncExternalTick();
                 UpdateUi();
             }
         }
@@ -352,6 +354,7 @@ public sealed partial class TimerPage : Page
                     _settings.ShortBreakMinutes = minutes;
                     _ = _repository.SaveSettingsAsync(_settings);
                 }
+                _timerEngine.SyncExternalTick();
                 UpdateUi();
             }
         }
@@ -369,6 +372,7 @@ public sealed partial class TimerPage : Page
                     _settings.LongBreakMinutes = minutes;
                     _ = _repository.SaveSettingsAsync(_settings);
                 }
+                _timerEngine.SyncExternalTick();
                 UpdateUi();
             }
         }
@@ -386,6 +390,7 @@ public sealed partial class TimerPage : Page
                     _settings.SessionsBeforeLongBreak = cycles;
                     _ = _repository.SaveSettingsAsync(_settings);
                 }
+                _timerEngine.SyncExternalTick();
                 UpdateUi();
             }
         }
@@ -436,14 +441,18 @@ public sealed partial class TimerPage : Page
 
     private void OnPrevCycleClicked(object sender, RoutedEventArgs e)
     {
-        // Cycle decrement
+        if (_timerEngine != null)
+        {
+            _timerEngine.PreviousCycle();
+            UpdateUi();
+        }
     }
 
     private void OnNextCycleClicked(object sender, RoutedEventArgs e)
     {
         if (_timerEngine != null)
         {
-            _timerEngine.Skip();
+            _timerEngine.NextCycle();
             UpdateUi();
         }
     }

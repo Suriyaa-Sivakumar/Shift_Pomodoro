@@ -6,6 +6,7 @@ using Windows.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using FlowWindows.Core.Enums;
 using FlowWindows.Core.Interfaces;
 using FlowWindows.Core.Models;
 
@@ -66,15 +67,29 @@ public sealed partial class StudyPlannerPage : Page
             }
             catch { }
 
+            var displayTopics = s.Topics.Select(t => new
+            {
+                t.Id,
+                t.SubjectId,
+                t.Title,
+                t.EstimatedHours,
+                IsCompleted = t.Status == ItemStatus.Completed,
+                EstimatedHoursText = $"{t.EstimatedHours:0.#} hrs"
+            }).ToList();
+
+            var completedTopics = s.Topics.Count(t => t.Status == ItemStatus.Completed);
+
             return new
             {
                 s.Id,
                 s.Name,
+                s.TargetHours,
                 ExamCountdownText = examText,
                 ColorBrush = new SolidColorBrush(accent),
                 HoursProgressText = $"{Math.Round(s.LoggedHours, 1)} / {Math.Round(s.TargetHours, 1)} hrs ({Math.Round(pct, 0)}%)",
                 ProgressPercent = pct,
-                Topics = s.Topics
+                TopicsCountText = $"{completedTopics}/{s.Topics.Count} completed",
+                Topics = displayTopics
             };
         }).ToList();
 
@@ -102,12 +117,49 @@ public sealed partial class StudyPlannerPage : Page
         };
 
         // Add 2 initial sample topics
-        subject.Topics.Add(new StudyTopic { Title = "Module 1: Foundations & Core Principles", EstimatedHours = target / 3.0 });
-        subject.Topics.Add(new StudyTopic { Title = "Module 2: Advanced Applications & Problem Solving", EstimatedHours = target / 3.0 });
+        subject.Topics.Add(new StudyTopic { SubjectId = subject.Id, Title = "Module 1: Foundations & Core Principles", EstimatedHours = Math.Round(target / 3.0, 1) });
+        subject.Topics.Add(new StudyTopic { SubjectId = subject.Id, Title = "Module 2: Practice & Applications", EstimatedHours = Math.Round(target / 3.0, 1) });
 
         await _studyService.AddOrUpdateSubjectAsync(subject);
         SubjectNameBox.Text = string.Empty;
+
+        StudyStatusInfoBar.Severity = InfoBarSeverity.Success;
+        StudyStatusInfoBar.Message = $"Subject '{subject.Name}' created.";
+        StudyStatusInfoBar.IsOpen = true;
+
         await LoadSubjectsAsync();
+    }
+
+    private async void OnSaveSubjectEditedClicked(object sender, RoutedEventArgs e)
+    {
+        if (_studyService == null || sender is not Button btn || btn.Tag is not string subjectId) return;
+
+        var subject = _subjects.FirstOrDefault(s => s.Id == subjectId);
+        if (subject == null) return;
+
+        if (btn.Parent is StackPanel panel)
+        {
+            var nameBox = panel.Children.OfType<TextBox>().FirstOrDefault(t => t.Name == "EditSubjectNameBox");
+            var hoursBox = panel.Children.OfType<NumberBox>().FirstOrDefault(n => n.Name == "EditTargetHoursBox");
+
+            if (nameBox != null && !string.IsNullOrWhiteSpace(nameBox.Text))
+            {
+                subject.Name = nameBox.Text.Trim();
+            }
+
+            if (hoursBox != null && hoursBox.Value > 0)
+            {
+                subject.TargetHours = hoursBox.Value;
+            }
+
+            await _studyService.AddOrUpdateSubjectAsync(subject);
+
+            StudyStatusInfoBar.Severity = InfoBarSeverity.Success;
+            StudyStatusInfoBar.Message = $"Subject '{subject.Name}' updated.";
+            StudyStatusInfoBar.IsOpen = true;
+
+            await LoadSubjectsAsync();
+        }
     }
 
     private async void OnDeleteSubjectClicked(object sender, RoutedEventArgs e)
@@ -115,8 +167,74 @@ public sealed partial class StudyPlannerPage : Page
         if (sender is Button btn && btn.Tag is string subjectId && _studyService != null)
         {
             await _studyService.RemoveSubjectAsync(subjectId);
+            StudyStatusInfoBar.Severity = InfoBarSeverity.Informational;
+            StudyStatusInfoBar.Message = "Subject deleted.";
+            StudyStatusInfoBar.IsOpen = true;
             await LoadSubjectsAsync();
         }
+    }
+
+    private async void OnAddTopicClicked(object sender, RoutedEventArgs e)
+    {
+        if (_studyService == null || sender is not Button btn || btn.Tag is not string subjectId) return;
+
+        if (btn.Parent is Grid grid)
+        {
+            var titleBox = grid.Children.OfType<TextBox>().FirstOrDefault(t => t.Name == "NewTopicTitleBox");
+            var hoursBox = grid.Children.OfType<NumberBox>().FirstOrDefault(n => n.Name == "NewTopicHoursBox");
+
+            var title = titleBox?.Text?.Trim();
+            if (string.IsNullOrWhiteSpace(title)) return;
+
+            var hours = hoursBox?.Value > 0 ? hoursBox.Value : 2.0;
+
+            var newTopic = new StudyTopic
+            {
+                SubjectId = subjectId,
+                Title = title,
+                EstimatedHours = hours,
+                Status = ItemStatus.Pending
+            };
+
+            await _studyService.AddOrUpdateTopicAsync(newTopic);
+            if (titleBox != null) titleBox.Text = string.Empty;
+
+            StudyStatusInfoBar.Severity = InfoBarSeverity.Success;
+            StudyStatusInfoBar.Message = $"Topic '{title}' added.";
+            StudyStatusInfoBar.IsOpen = true;
+
+            await LoadSubjectsAsync();
+        }
+    }
+
+    private async void OnTopicCheckboxClicked(object sender, RoutedEventArgs e)
+    {
+        if (_studyService == null || sender is not CheckBox cb || cb.Tag is not string topicId) return;
+
+        foreach (var sub in _subjects)
+        {
+            var topic = sub.Topics.FirstOrDefault(t => t.Id == topicId);
+            if (topic != null)
+            {
+                topic.Status = cb.IsChecked == true ? ItemStatus.Completed : ItemStatus.Pending;
+                topic.CompletedAt = cb.IsChecked == true ? DateTimeOffset.UtcNow : null;
+                await _studyService.AddOrUpdateTopicAsync(topic);
+                await LoadSubjectsAsync();
+                break;
+            }
+        }
+    }
+
+    private async void OnDeleteTopicClicked(object sender, RoutedEventArgs e)
+    {
+        if (_studyService == null || sender is not Button btn || btn.Tag is not string topicId) return;
+
+        await _studyService.RemoveTopicAsync(topicId);
+        StudyStatusInfoBar.Severity = InfoBarSeverity.Informational;
+        StudyStatusInfoBar.Message = "Topic deleted.";
+        StudyStatusInfoBar.IsOpen = true;
+
+        await LoadSubjectsAsync();
     }
 
     private void OnStudySubjectClicked(object sender, RoutedEventArgs e)
@@ -134,4 +252,3 @@ public sealed partial class StudyPlannerPage : Page
         }
     }
 }
-

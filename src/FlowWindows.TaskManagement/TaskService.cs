@@ -78,5 +78,14 @@ public class TaskService : ITaskService
 
         await _repository.SaveTaskAsync(task);
     }
+
+    public async Task ClearCompletedTasksAsync()
+    {
+        var tasks = await _repository.GetTasksAsync();
+        foreach (var task in tasks.Where(t => t.Status == ItemStatus.Completed))
+        {
+            await _repository.DeleteTaskAsync(task.Id);
+        }
+    }
 }
 

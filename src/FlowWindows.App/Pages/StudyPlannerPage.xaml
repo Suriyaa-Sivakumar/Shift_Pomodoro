@@ -16,10 +16,13 @@
                     <FontIcon Glyph="&#xE72B;" FontSize="14" />
                 </Button>
                 <StackPanel Margin="42,0,0,0">
-                    <TextBlock Text="Study Planner" FontSize="20" FontWeight="Bold" />
-                    <TextBlock Text="Track syllabus coverage, exam deadlines, and study hours" FontSize="12" Opacity="0.6" Margin="0,2,0,0" />
+                    <TextBlock Text="Study Planner" FontSize="20" FontWeight="Bold" Foreground="{ThemeResource ShiftTextPrimaryBrush}" />
+                    <TextBlock Text="Track syllabus coverage, topics, units, and exam deadlines" FontSize="12" Foreground="{ThemeResource ShiftTextSecondaryBrush}" Margin="0,2,0,0" />
                 </StackPanel>
             </Grid>
+
+            <!-- Status Notice -->
+            <InfoBar x:Name="StudyStatusInfoBar" IsOpen="False" Severity="Success" />
 
             <!-- Quick Add Subject Card -->
             <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="12" Padding="20">
@@ -64,9 +67,9 @@
                         HorizontalAlignment="Stretch"
                         Visibility="Collapsed">
                     <StackPanel HorizontalAlignment="Center" Spacing="8">
-                        <FontIcon Glyph="&#xE82D;" FontSize="28" Opacity="0.4" HorizontalAlignment="Center" />
-                        <TextBlock Text="No subjects or courses added yet" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center" />
-                        <TextBlock Text="Add your subjects above to organize study blocks, track exam countdowns, and measure mastery." FontSize="13" Opacity="0.6" HorizontalAlignment="Center" />
+                        <FontIcon Glyph="&#xE82D;" FontSize="28" Foreground="{ThemeResource ShiftTextSecondaryBrush}" HorizontalAlignment="Center" />
+                        <TextBlock Text="No subjects or courses added yet" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center" Foreground="{ThemeResource ShiftTextPrimaryBrush}" />
+                        <TextBlock Text="Add your subjects above to organize study blocks, track exam countdowns, and customize units." FontSize="13" Foreground="{ThemeResource ShiftTextSecondaryBrush}" HorizontalAlignment="Center" />
                     </StackPanel>
                 </Border>
 
@@ -78,25 +81,44 @@
                                     BorderThickness="1"
                                     CornerRadius="12"
                                     Padding="20"
-                                    Margin="0,6">
-                                <StackPanel Spacing="12">
+                                    Margin="0,8">
+                                <StackPanel Spacing="14">
                                     <Grid>
                                         <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
                                             <Border Width="12" Height="12" CornerRadius="6" Background="{Binding ColorBrush}" />
                                             <TextBlock Text="{Binding Name}" FontSize="17" FontWeight="Bold" />
                                             <Border Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="8" Padding="8,2" Margin="6,0,0,0">
-                                                <TextBlock Text="{Binding ExamCountdownText}" FontSize="11" FontWeight="SemiBold" Foreground="#448AFF" />
+                                                <TextBlock Text="{Binding ExamCountdownText}" FontSize="11" FontWeight="SemiBold" Foreground="#60A5FA" />
                                             </Border>
                                         </StackPanel>
 
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                                            <!-- Study Now Button -->
                                             <Button Tag="{Binding Id}" Style="{ThemeResource AccentButtonStyle}" CornerRadius="10" Padding="12,4" Click="OnStudySubjectClicked">
                                                 <StackPanel Orientation="Horizontal" Spacing="6">
                                                     <FontIcon Glyph="&#xE768;" FontSize="11" />
                                                     <TextBlock Text="Study Now" FontSize="12" />
                                                 </StackPanel>
                                             </Button>
-                                            <Button Tag="{Binding Id}" Width="32" Height="32" Padding="0" CornerRadius="16" Click="OnDeleteSubjectClicked">
+
+                                            <!-- Edit Subject Button with Flyout -->
+                                            <Button Width="32" Height="32" Padding="0" CornerRadius="16" ToolTipService.ToolTip="Edit Subject">
+                                                <FontIcon Glyph="&#xE70F;" FontSize="12" />
+                                                <Button.Flyout>
+                                                    <Flyout>
+                                                        <StackPanel Spacing="10" Width="260">
+                                                            <TextBlock Text="Edit Course / Subject" FontWeight="Bold" FontSize="14" Foreground="{ThemeResource ShiftTextPrimaryBrush}" />
+                                                            <TextBox x:Name="EditSubjectNameBox" Header="Subject Name" Text="{Binding Name}" CornerRadius="8" />
+                                                            <NumberBox x:Name="EditTargetHoursBox" Header="Target Hours" Value="{Binding TargetHours}" Minimum="1" Maximum="1000" SpinButtonPlacementMode="Inline" CornerRadius="8" />
+                                                            <Button Content="Save Changes" Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Stretch" CornerRadius="8"
+                                                                    Tag="{Binding Id}" Click="OnSaveSubjectEditedClicked" />
+                                                        </StackPanel>
+                                                    </Flyout>
+                                                </Button.Flyout>
+                                            </Button>
+
+                                            <!-- Delete Subject Button -->
+                                            <Button Tag="{Binding Id}" Width="32" Height="32" Padding="0" CornerRadius="16" ToolTipService.ToolTip="Delete Subject" Click="OnDeleteSubjectClicked">
                                                 <FontIcon Glyph="&#xE74D;" FontSize="12" />
                                             </Button>
                                         </StackPanel>
@@ -105,22 +127,59 @@
                                     <!-- Hours Progress Bar -->
                                     <StackPanel Spacing="4">
                                         <Grid>
-                                            <TextBlock Text="Study Hours Logged" FontSize="12" Opacity="0.6" />
-                                            <TextBlock Text="{Binding HoursProgressText}" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Right" />
+                                            <TextBlock Text="Study Hours Logged" FontSize="12" Foreground="{ThemeResource ShiftTextSecondaryBrush}" />
+                                            <TextBlock Text="{Binding HoursProgressText}" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource ShiftTextPrimaryBrush}" HorizontalAlignment="Right" />
                                         </Grid>
                                         <ProgressBar Value="{Binding ProgressPercent}" Maximum="100" Height="6" CornerRadius="3" Foreground="{Binding ColorBrush}" />
                                     </StackPanel>
 
                                     <!-- Topics Section -->
-                                    <Border Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="8" Padding="12">
-                                        <StackPanel Spacing="8">
-                                            <TextBlock Text="Key Topics &amp; Units" FontSize="13" FontWeight="SemiBold" Opacity="0.8" />
+                                    <Border Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="8" Padding="14">
+                                        <StackPanel Spacing="10">
+                                            <Grid>
+                                                <TextBlock Text="Key Topics &amp; Units" FontSize="13" FontWeight="SemiBold" Foreground="{ThemeResource ShiftTextPrimaryBrush}" VerticalAlignment="Center" />
+                                                <TextBlock Text="{Binding TopicsCountText}" FontSize="11" Foreground="{ThemeResource ShiftTextSecondaryBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                                            </Grid>
+
+                                            <!-- Add Topic Row -->
+                                            <Grid ColumnSpacing="8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="100" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <TextBox x:Name="NewTopicTitleBox" PlaceholderText="New topic / unit name..." CornerRadius="8" />
+                                                <NumberBox x:Name="NewTopicHoursBox" Grid.Column="1" Value="2" Minimum="0.5" Maximum="100" SpinButtonPlacementMode="Inline" CornerRadius="8" PlaceholderText="Est. Hrs" />
+                                                <Button Grid.Column="2" Tag="{Binding Id}" CornerRadius="8" Padding="10,4" ToolTipService.ToolTip="Add Topic" Click="OnAddTopicClicked">
+                                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                                        <FontIcon Glyph="&#xE710;" FontSize="11" />
+                                                        <TextBlock Text="Add" FontSize="12" />
+                                                    </StackPanel>
+                                                </Button>
+                                            </Grid>
+
+                                            <!-- Topics List -->
                                             <ListView ItemsSource="{Binding Topics}" SelectionMode="None">
                                                 <ListView.ItemTemplate>
                                                     <DataTemplate>
-                                                        <Grid Padding="4,2">
-                                                            <TextBlock Text="{Binding Title}" FontSize="12" VerticalAlignment="Center" />
-                                                            <TextBlock Text="{Binding EstimatedHours, ConverterParameter='{}Est: {0} hrs'}" HorizontalAlignment="Right" FontSize="11" Opacity="0.6" />
+                                                        <Grid Padding="4,4">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto" />
+                                                                <ColumnDefinition Width="*" />
+                                                                <ColumnDefinition Width="Auto" />
+                                                                <ColumnDefinition Width="Auto" />
+                                                            </Grid.ColumnDefinitions>
+
+                                                            <CheckBox IsChecked="{Binding IsCompleted}" Tag="{Binding Id}" Click="OnTopicCheckboxClicked" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                                            
+                                                            <TextBlock Grid.Column="1" Text="{Binding Title}" FontSize="13" Foreground="{ThemeResource ShiftTextPrimaryBrush}" VerticalAlignment="Center" />
+                                                            
+                                                            <TextBlock Grid.Column="2" Text="{Binding EstimatedHoursText}" Margin="12,0" FontSize="11" Foreground="{ThemeResource ShiftTextSecondaryBrush}" VerticalAlignment="Center" />
+
+                                                            <Button Grid.Column="3" Tag="{Binding Id}" Width="28" Height="28" Padding="0" CornerRadius="14" ToolTipService.ToolTip="Delete Topic" Click="OnDeleteTopicClicked">
+                                                                <FontIcon Glyph="&#xE711;" FontSize="10" />
+                                                            </Button>
                                                         </Grid>
                                                     </DataTemplate>
                                                 </ListView.ItemTemplate>
@@ -136,4 +195,3 @@
         </StackPanel>
     </ScrollViewer>
 </Page>
-

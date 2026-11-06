@@ -153,7 +153,19 @@ public class TimerEngine : ITimerEngine, IDisposable
     public int SessionsBeforeLongBreak
     {
         get { lock (_lock) return _sessionsBeforeLongBreak; }
-        set { lock (_lock) _sessionsBeforeLongBreak = Math.Max(1, value); }
+        set
+        {
+            lock (_lock)
+            {
+                _sessionsBeforeLongBreak = Math.Max(1, value);
+                if (_currentCycleSession > _sessionsBeforeLongBreak)
+                {
+                    _currentCycleSession = 1;
+                }
+                CycleChanged?.Invoke(this, _currentCycleSession);
+            }
+            DispatchTick();
+        }
     }
 
     public string SessionTitle
@@ -379,7 +391,12 @@ public class TimerEngine : ITimerEngine, IDisposable
             if (_currentSessionType == type)
             {
                 _totalDuration = duration;
-                if (_state == SessionState.Idle)
+                if (_state != SessionState.Running)
+                {
+                    _accumulatedElapsed = TimeSpan.Zero;
+                    _state = SessionState.Idle;
+                }
+                else if (_accumulatedElapsed >= _totalDuration)
                 {
                     _accumulatedElapsed = TimeSpan.Zero;
                 }
@@ -408,16 +425,52 @@ public class TimerEngine : ITimerEngine, IDisposable
                 _ => _focusDuration
             };
 
-            if (_state == SessionState.Idle)
+            if (_state != SessionState.Running)
             {
                 _accumulatedElapsed = TimeSpan.Zero;
+                _state = SessionState.Idle;
             }
         }
+        CycleChanged?.Invoke(this, _currentCycleSession);
         DispatchTick();
     }
 
     public void SyncExternalTick()
     {
+        DispatchTick();
+    }
+
+    public void PreviousCycle()
+    {
+        lock (_lock)
+        {
+            if (_currentCycleSession > 1)
+            {
+                _currentCycleSession--;
+            }
+            else
+            {
+                _currentCycleSession = _sessionsBeforeLongBreak;
+            }
+            CycleChanged?.Invoke(this, _currentCycleSession);
+        }
+        DispatchTick();
+    }
+
+    public void NextCycle()
+    {
+        lock (_lock)
+        {
+            if (_currentCycleSession < _sessionsBeforeLongBreak)
+            {
+                _currentCycleSession++;
+            }
+            else
+            {
+                _currentCycleSession = 1;
+            }
+            CycleChanged?.Invoke(this, _currentCycleSession);
+        }
         DispatchTick();
     }
 

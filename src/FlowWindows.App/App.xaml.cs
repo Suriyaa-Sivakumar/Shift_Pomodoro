@@ -58,15 +58,34 @@ public partial class App : Application
         LogCrash("App.OnLaunched invoked", null);
         try
         {
-            _singleInstanceManager = new SingleInstanceManager();
-            bool isFirstInstance = _singleInstanceManager.TryAcquire(() =>
+            var cmdArgs = Environment.GetCommandLineArgs();
+            if (cmdArgs.Any(a => a.Equals("--toggle-mini", StringComparison.OrdinalIgnoreCase) || a.Equals("-m", StringComparison.OrdinalIgnoreCase)))
             {
-                // Callback invoked when a second instance tries to launch
-                _mainWindow?.DispatcherQueue.TryEnqueue(() =>
+                if (SingleInstanceManager.SendActivationSignal("TOGGLE_MINI"))
                 {
-                    _mainWindow.ShowAndActivateMainWindow();
+                    LogCrash("Forwarded TOGGLE_MINI signal to active instance and exiting.", null);
+                    Environment.Exit(0);
+                    return;
+                }
+            }
+
+            _singleInstanceManager = new SingleInstanceManager();
+            bool isFirstInstance = _singleInstanceManager.TryAcquire(
+                onActivatedCallback: () =>
+                {
+                    // Callback invoked when a second instance tries to launch
+                    _mainWindow?.DispatcherQueue.TryEnqueue(() =>
+                    {
+                        _mainWindow.ShowAndActivateMainWindow();
+                    });
+                },
+                onMiniTimerToggleCallback: () =>
+                {
+                    _mainWindow?.DispatcherQueue.TryEnqueue(() =>
+                    {
+                        _mainWindow.ToggleMiniTimer();
+                    });
                 });
-            });
 
             LogCrash($"SingleInstanceManager result: isFirstInstance = {isFirstInstance}", null);
 

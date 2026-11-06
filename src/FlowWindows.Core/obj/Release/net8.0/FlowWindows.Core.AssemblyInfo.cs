@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FlowWindows.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+95fbc99e6a0e132ef3a27bfa20473b27834d84da")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c565c23aa40d40f00afb1408b88815a96142b42e")]
 [assembly: System.Reflection.AssemblyProductAttribute("FlowWindows.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FlowWindows.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -171,6 +171,8 @@ public class AppSettings
     public bool EnableTickingSound { get; set; } = false;
     public bool ShowWindowsNotifications { get; set; } = true;
     public bool MiniTimerAlwaysOnTop { get; set; } = true;
+    public bool ShowTimerOnTaskbar { get; set; } = true;
+    public bool LaunchOnStartup { get; set; } = false;
     public bool AutoOpenMiniTimerOnFocus { get; set; } = false;
     public bool AutoHideMiniTimerOnBreak { get; set; } = false;
     public double MiniTimerX { get; set; } = -1;

@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using FlowWindows.Core.Common;
 using FlowWindows.Core.Enums;
 using FlowWindows.Core.Interfaces;
 
@@ -69,10 +70,10 @@ public class SystemTrayManager : IDisposable
             SessionType.Focus => "Focus",
             SessionType.ShortBreak => "Short Break",
             SessionType.LongBreak => "Long Break",
-            _ => "Flow"
+            _ => "Shift"
         };
 
-        var timeStr = $"{remainingTime.Minutes:D2}:{remainingTime.Seconds:D2}";
+        var timeStr = TimeFormatHelper.FormatTimer(remainingTime);
         var stateStr = state switch
         {
             SessionState.Running => $"Running ({timeStr})",
@@ -84,7 +85,7 @@ public class SystemTrayManager : IDisposable
         _statusItem.Text = $"{typeName}: {stateStr}";
         _startPauseItem.Text = state == SessionState.Running ? "Pause" : "Start";
 
-        var tooltip = $"Flow - {typeName} ({timeStr})";
+        var tooltip = $"Shift - {typeName} ({timeStr})";
         if (tooltip.Length >= 64) tooltip = tooltip.Substring(0, 63);
         _notifyIcon.Text = tooltip;
 

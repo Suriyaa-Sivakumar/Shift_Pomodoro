@@ -20,7 +20,7 @@
                 <Image Source="ms-appx:///Assets/Square44x44Logo.scale-200.png"
                        Width="20" Height="20"
                        VerticalAlignment="Center" />
-                <TextBlock Text="Shift - Pomodoro" FontSize="13" FontWeight="SemiBold" Opacity="0.85" VerticalAlignment="Center" />
+                <TextBlock Text="Shift - Pomodoro" FontSize="13" FontWeight="SemiBold" Foreground="{ThemeResource ShiftTextPrimaryBrush}" VerticalAlignment="Center" />
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="4" VerticalAlignment="Center">
@@ -30,7 +30,7 @@
                         CornerRadius="16" Background="Transparent" BorderThickness="0"
                         ToolTipService.ToolTip="Reset Timer"
                         Click="OnResetClicked">
-                    <FontIcon Glyph="&#xE72C;" FontSize="13" />
+                    <FontIcon Glyph="&#xE72C;" FontSize="13" Foreground="{ThemeResource ShiftTextSecondaryBrush}" />
                 </Button>
 
                 <!-- Statistics Button -->
@@ -39,7 +39,7 @@
                         CornerRadius="16" Background="Transparent" BorderThickness="0"
                         ToolTipService.ToolTip="Statistics"
                         Click="OnStatsClicked">
-                    <FontIcon Glyph="&#xE9D9;" FontSize="13" />
+                    <FontIcon Glyph="&#xE9D9;" FontSize="13" Foreground="{ThemeResource ShiftTextSecondaryBrush}" />
                 </Button>
 
                 <!-- More Menu Button -->
@@ -48,7 +48,7 @@
                         CornerRadius="16" Background="Transparent" BorderThickness="0"
                         ToolTipService.ToolTip="Menu"
                         Click="OnMoreMenuClicked">
-                    <FontIcon Glyph="&#xE712;" FontSize="13" />
+                    <FontIcon Glyph="&#xE712;" FontSize="13" Foreground="{ThemeResource ShiftTextSecondaryBrush}" />
 
                     <Button.Flyout>
                         <MenuFlyout x:Name="MoreMenuFlyout">
@@ -141,6 +141,7 @@
                            Text="Shift"
                            FontSize="18"
                            FontWeight="Medium"
+                           Foreground="{ThemeResource ShiftTextPrimaryBrush}"
                            VerticalAlignment="Center" />
 
                 <!-- Edit Pencil Flyout -->
@@ -148,11 +149,11 @@
                         Width="28" Height="28" Padding="0"
                         CornerRadius="14" Background="Transparent" BorderThickness="0"
                         VerticalAlignment="Center">
-                    <FontIcon Glyph="&#xE70F;" FontSize="11" Opacity="0.6" />
+                    <FontIcon Glyph="&#xE70F;" FontSize="11" Foreground="{ThemeResource ShiftTextSecondaryBrush}" />
                     <Button.Flyout>
                         <Flyout x:Name="EditSessionFlyout">
                             <StackPanel Width="240" Spacing="10">
-                                <TextBlock Text="Session Details" FontWeight="SemiBold" FontSize="14" />
+                                <TextBlock Text="Session Details" FontWeight="SemiBold" FontSize="14" Foreground="{ThemeResource ShiftTextPrimaryBrush}" />
                                 <TextBox x:Name="CustomSessionTitleBox" Header="Title" PlaceholderText="Shift name..." />
                                 <ComboBox x:Name="TagComboBox" Header="Tag" PlaceholderText="Select tag..." HorizontalAlignment="Stretch" SelectionChanged="OnTagSelectionChanged">
                                     <ComboBox.ItemTemplate>
@@ -183,6 +184,7 @@
                        Text="25:00"
                        FontSize="76"
                        FontWeight="SemiBold"
+                       Foreground="{ThemeResource ShiftTextPrimaryBrush}"
                        HorizontalAlignment="Center"
                        TextAlignment="Center"
                        FontFamily="Segoe UI Variable Display, Segoe UI, sans-serif"
@@ -195,7 +197,7 @@
                         CornerRadius="12" Background="Transparent" BorderThickness="0"
                         ToolTipService.ToolTip="Previous Cycle"
                         Click="OnPrevCycleClicked">
-                    <FontIcon Glyph="&#xE76B;" FontSize="9" Opacity="0.5" />
+                    <FontIcon Glyph="&#xE76B;" FontSize="9" Foreground="{ThemeResource ShiftTextSecondaryBrush}" />
                 </Button>
 
                 <StackPanel x:Name="CycleDotsPanel" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
@@ -207,7 +209,7 @@
                         CornerRadius="12" Background="Transparent" BorderThickness="0"
                         ToolTipService.ToolTip="Next Cycle"
                         Click="OnNextCycleClicked">
-                    <FontIcon Glyph="&#xE76C;" FontSize="9" Opacity="0.5" />
+                    <FontIcon Glyph="&#xE76C;" FontSize="9" Foreground="{ThemeResource ShiftTextSecondaryBrush}" />
                 </Button>
             </StackPanel>
 
@@ -219,7 +221,7 @@
                         CornerRadius="18" Background="Transparent" BorderThickness="0"
                         ToolTipService.ToolTip="Skip to next session"
                         Click="OnSkipClicked">
-                    <FontIcon Glyph="&#xE893;" FontSize="14" Opacity="0.65" />
+                    <FontIcon Glyph="&#xE893;" FontSize="14" Foreground="{ThemeResource ShiftTextSecondaryBrush}" />
                 </Button>
 
                 <!-- Center Large Play / Pause -->

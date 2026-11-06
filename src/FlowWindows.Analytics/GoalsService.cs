@@ -84,6 +84,7 @@ public class GoalsService : IGoalsService
                         break;
 
                     case GoalType.DailySessions:
+                    case GoalType.WeeklySessions:
                         goal.CurrentValue += 1;
                         await _repository.SaveGoalAsync(goal);
                         break;
@@ -152,6 +153,27 @@ public class GoalsService : IGoalsService
         }
 
         return achievements;
+    }
+
+    public async Task AddOrUpdateGoalAsync(GoalRecord goal)
+    {
+        await _repository.SaveGoalAsync(goal);
+    }
+
+    public async Task RemoveGoalAsync(string goalId)
+    {
+        await _repository.DeleteGoalAsync(goalId);
+    }
+
+    public async Task ResetGoalProgressAsync(string goalId)
+    {
+        var goals = await _repository.GetGoalsAsync();
+        var target = goals.FirstOrDefault(g => g.Id == goalId);
+        if (target != null)
+        {
+            target.CurrentValue = 0;
+            await _repository.SaveGoalAsync(target);
+        }
     }
 }
 

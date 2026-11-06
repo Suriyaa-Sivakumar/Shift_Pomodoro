@@ -51,7 +51,8 @@ public enum GoalType
     MonthlyFocusMinutes = 2,
     DailySessions = 3,
     SubjectHours = 4,
-    TasksCompleted = 5
+    TasksCompleted = 5,
+    WeeklySessions = 6
 }
 
 public enum SoundEffect

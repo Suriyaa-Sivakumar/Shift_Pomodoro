@@ -6,6 +6,7 @@ using Windows.Graphics;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using FlowWindows.Analytics;
+using FlowWindows.Core.Common;
 using FlowWindows.Core.Enums;
 using FlowWindows.Core.Interfaces;
 using FlowWindows.Core.Models;
@@ -34,6 +35,9 @@ public sealed partial class MainWindow : Window
     [DllImport("user32.dll")]
     private static extern void SwitchToThisWindow(IntPtr hWnd, bool fUnknown);
 
+    [DllImport("user32.dll")]
+    private static extern uint GetDpiForWindow(IntPtr hWnd);
+
     private readonly IntPtr _hwnd;
     private readonly AppWindow _appWindow;
 
@@ -48,6 +52,7 @@ public sealed partial class MainWindow : Window
     private SystemTrayManager _trayManager = null!;
     private GlobalHotkeyManager _hotkeyManager = null!;
     private MiniTimerWindow? _miniTimerWindow;
+    private DynamicTaskbarIconService? _taskbarIconService;
     private AppSettings _settings = new();
 
     public MainWindow()
@@ -74,10 +79,13 @@ public sealed partial class MainWindow : Window
                 _appWindow.SetIcon(iconPath);
                 Log("MainWindow constructor: _appWindow icon set.");
             }
+            _taskbarIconService = new DynamicTaskbarIconService(_hwnd, iconPath);
 
-            // Window size and position (Flow-style compact window)
-            _appWindow.Resize(new SizeInt32(520, 440));
-            Log("MainWindow constructor: _appWindow resized.");
+            // Window size and position (DPI-scaled Flow-style compact window: 520x440 DIPs)
+            uint dpi = GetDpiForWindow(_hwnd);
+            float scale = dpi > 0 ? (float)dpi / 96.0f : 1.0f;
+            _appWindow.Resize(new SizeInt32((int)Math.Round(520 * scale), (int)Math.Round(440 * scale)));
+            Log("MainWindow constructor: _appWindow resized with DPI scaling.");
 
             try
             {
@@ -138,13 +146,6 @@ public sealed partial class MainWindow : Window
             _settings = await _repository.GetSettingsAsync();
             Log("Database initialized successfully.");
 
-            // 2. Authoritative Timer Engine
-            _timerEngine = new TimerEngine(_repository);
-            _timerEngine.SessionsBeforeLongBreak = _settings.SessionsBeforeLongBreak;
-            _timerEngine.CommitmentMode = _settings.CommitmentMode;
-            _timerEngine.SetCustomDuration(SessionType.Focus, TimeSpan.FromMinutes(_settings.FocusMinutes));
-            _timerEngine.SetCustomDuration(SessionType.ShortBreak, TimeSpan.FromMinutes(_settings.ShortBreakMinutes));
-            _timerEngine.SetCustomDuration(SessionType.LongBreak, TimeSpan.FromMinutes(_settings.LongBreakMinutes));
 
             // Check for crash recovery from previous unexpected shutdown
             try
@@ -318,6 +319,28 @@ public sealed partial class MainWindow : Window
 
         // Update Tray Icon Status
         _trayManager.UpdateStatus(e.State, e.SessionType, e.RemainingTime);
+
+        // Update Dynamic Taskbar Icon
+        var timeText = TimeFormatHelper.FormatTimer(e.RemainingTime);
+        if (_settings.ShowTimerOnTaskbar && (e.State == SessionState.Running || e.State == SessionState.Paused))
+        {
+            var hIcon = _taskbarIconService?.UpdateTimerIcon(timeText) ?? IntPtr.Zero;
+            if (hIcon != IntPtr.Zero)
+            {
+                try
+                {
+                    var iconId = Microsoft.UI.Win32Interop.GetIconIdFromIcon(hIcon);
+                    _appWindow.SetIcon(iconId);
+                }
+                catch { }
+            }
+            _appWindow.Title = $"{timeText} • Shift - Pomodoro";
+        }
+        else
+        {
+            _taskbarIconService?.RestoreDefaultIcon();
+            _appWindow.Title = "Shift - Pomodoro";
+        }
     }
 
     private void OnTimerStateChanged(object? sender, SessionState state)
@@ -331,9 +354,16 @@ public sealed partial class MainWindow : Window
         }
         else
         {
-            if (state == SessionState.Idle)
+            if (state == SessionState.Idle || state == SessionState.Completed)
             {
                 TaskbarManager.ClearProgress(_hwnd);
+                _taskbarIconService?.RestoreDefaultIcon();
+                _appWindow.Title = "Shift - Pomodoro";
+                var iconPath = Path.Combine(AppContext.BaseDirectory, "Assets", "AppIcon.ico");
+                if (File.Exists(iconPath))
+                {
+                    try { _appWindow.SetIcon(iconPath); } catch { }
+                }
             }
         }
     }
@@ -469,6 +499,8 @@ public sealed partial class MainWindow : Window
 
         _hotkeyManager?.Dispose();
         _trayManager?.Dispose();
+        _taskbarIconService?.RestoreDefaultIcon();
+        _taskbarIconService?.Dispose();
         _miniTimerWindow?.Close();
         _timerEngine?.Dispose();
 

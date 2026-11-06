@@ -19,6 +19,7 @@ public sealed partial class TasksPage : Page
     private Action? _navigateToTimerAction;
     private List<TaskItem> _allTasks = new();
     private string _currentFilter = "Pending";
+    private string _searchQuery = string.Empty;
 
     public TasksPage()
     {
@@ -44,17 +45,26 @@ public sealed partial class TasksPage : Page
 
         _allTasks = await _taskService.GetAllTasksAsync();
 
+        var query = _allTasks.AsEnumerable();
+
+        if (!string.IsNullOrWhiteSpace(_searchQuery))
+        {
+            query = query.Where(t => t.Title.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase));
+        }
+
         var filtered = _currentFilter switch
         {
-            "Completed" => _allTasks.Where(t => t.Status == ItemStatus.Completed).ToList(),
-            "Pending" => _allTasks.Where(t => t.Status != ItemStatus.Completed).ToList(),
-            _ => _allTasks
+            "Completed" => query.Where(t => t.Status == ItemStatus.Completed).ToList(),
+            "Pending" => query.Where(t => t.Status != ItemStatus.Completed).ToList(),
+            _ => query.ToList()
         };
 
         var displayItems = filtered.Select(t => new
         {
             t.Id,
             t.Title,
+            t.EstimatedMinutes,
+            PriorityIndex = (int)t.Priority,
             IsChecked = t.Status == ItemStatus.Completed,
             PriorityText = t.Priority.ToString().ToUpperInvariant(),
             PriorityBadgeBrush = GetPriorityBadgeBrush(t.Priority),
@@ -104,7 +114,50 @@ public sealed partial class TasksPage : Page
 
         await _taskService.AddOrUpdateTaskAsync(newTask);
         NewTaskTitleBox.Text = string.Empty;
+
+        TaskStatusInfoBar.Severity = InfoBarSeverity.Success;
+        TaskStatusInfoBar.Message = $"Task '{newTask.Title}' created.";
+        TaskStatusInfoBar.IsOpen = true;
+
         await LoadTasksAsync();
+    }
+
+    private async void OnSaveTaskEditedClicked(object sender, RoutedEventArgs e)
+    {
+        if (_taskService == null || sender is not Button btn || btn.Tag is not string taskId) return;
+
+        var task = _allTasks.FirstOrDefault(t => t.Id == taskId);
+        if (task == null) return;
+
+        if (btn.Parent is StackPanel panel)
+        {
+            var titleBox = panel.Children.OfType<TextBox>().FirstOrDefault(t => t.Name == "EditTaskTitleBox");
+            var priorityCombo = panel.Children.OfType<ComboBox>().FirstOrDefault(c => c.Name == "EditPriorityCombo");
+            var estBox = panel.Children.OfType<NumberBox>().FirstOrDefault(n => n.Name == "EditEstMinutesBox");
+
+            if (titleBox != null && !string.IsNullOrWhiteSpace(titleBox.Text))
+            {
+                task.Title = titleBox.Text.Trim();
+            }
+
+            if (priorityCombo != null && priorityCombo.SelectedIndex >= 0)
+            {
+                task.Priority = (PriorityLevel)priorityCombo.SelectedIndex;
+            }
+
+            if (estBox != null && estBox.Value >= 5)
+            {
+                task.EstimatedMinutes = (int)estBox.Value;
+            }
+
+            await _taskService.AddOrUpdateTaskAsync(task);
+
+            TaskStatusInfoBar.Severity = InfoBarSeverity.Success;
+            TaskStatusInfoBar.Message = $"Task '{task.Title}' updated.";
+            TaskStatusInfoBar.IsOpen = true;
+
+            await LoadTasksAsync();
+        }
     }
 
     private async void OnTaskCheckboxClicked(object sender, RoutedEventArgs e)
@@ -121,8 +174,27 @@ public sealed partial class TasksPage : Page
         if (sender is Button btn && btn.Tag is string taskId && _taskService != null)
         {
             await _taskService.RemoveTaskAsync(taskId);
+            TaskStatusInfoBar.Severity = InfoBarSeverity.Informational;
+            TaskStatusInfoBar.Message = "Task deleted.";
+            TaskStatusInfoBar.IsOpen = true;
             await LoadTasksAsync();
         }
+    }
+
+    private async void OnClearCompletedClicked(object sender, RoutedEventArgs e)
+    {
+        if (_taskService == null) return;
+        await _taskService.ClearCompletedTasksAsync();
+        TaskStatusInfoBar.Severity = InfoBarSeverity.Success;
+        TaskStatusInfoBar.Message = "All completed tasks cleared.";
+        TaskStatusInfoBar.IsOpen = true;
+        await LoadTasksAsync();
+    }
+
+    private void OnSearchTasksChanged(object sender, TextChangedEventArgs e)
+    {
+        _searchQuery = SearchTasksBox.Text?.Trim() ?? string.Empty;
+        _ = LoadTasksAsync();
     }
 
     private void OnFocusTaskClicked(object sender, RoutedEventArgs e)
@@ -158,4 +230,3 @@ public sealed partial class TasksPage : Page
         _ = LoadTasksAsync();
     }
 }
-

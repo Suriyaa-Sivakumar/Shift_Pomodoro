@@ -13,12 +13,29 @@ public static class ThemeHelper
     {
         try
         {
-            if (Application.Current?.Resources != null && Application.Current.Resources.TryGetValue(key, out var val) && val is Brush b)
+            if (Application.Current?.Resources != null)
             {
-                return b;
+                if (Application.Current.Resources.TryGetValue(key, out var val) && val is Brush b)
+                {
+                    return b;
+                }
             }
         }
         catch { }
+
+        // Provide crisp, high-contrast defaults based on key name
+        if (key.Contains("TextPrimary", StringComparison.OrdinalIgnoreCase))
+        {
+            return new SolidColorBrush(ParseColor("#FFFFFF"));
+        }
+        if (key.Contains("TextSecondary", StringComparison.OrdinalIgnoreCase))
+        {
+            return new SolidColorBrush(ParseColor("#CBD5E1"));
+        }
+        if (key.Contains("TextMuted", StringComparison.OrdinalIgnoreCase))
+        {
+            return new SolidColorBrush(ParseColor("#94A3B8"));
+        }
 
         return new SolidColorBrush(ParseColor(fallbackHex));
     }
@@ -47,6 +64,17 @@ public static class ThemeHelper
         catch { }
 
         return Color.FromArgb(255, 45, 184, 143);
+    }
+
+    public static void ApplyTheme(FrameworkElement? element, FlowWindows.Core.Enums.ThemeMode mode)
+    {
+        if (element == null) return;
+        element.RequestedTheme = mode switch
+        {
+            FlowWindows.Core.Enums.ThemeMode.Dark => ElementTheme.Dark,
+            FlowWindows.Core.Enums.ThemeMode.Light => ElementTheme.Light,
+            _ => ElementTheme.Default
+        };
     }
 }
 

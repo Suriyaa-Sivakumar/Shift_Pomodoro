@@ -170,6 +170,146 @@ public sealed partial class StatisticsPage : Page
             KpiStreakDays.Text = $"{streak} days";
 
             RenderCapsuleBarChart(start, end, daily);
+            await RenderAnnualHeatmapAsync();
+        }
+        catch { }
+    }
+
+    private async Task RenderAnnualHeatmapAsync()
+    {
+        if (_analyticsService == null) return;
+
+        try
+        {
+            var today = DateTime.Today;
+            int dayOfWeekDiff = (7 + ((int)today.DayOfWeek - (int)DayOfWeek.Monday)) % 7;
+            var currentWeekMonday = today.AddDays(-dayOfWeekDiff);
+            // 52 weeks back:
+            var startDate = currentWeekMonday.AddDays(-51 * 7);
+
+            var annualStats = await _analyticsService.GetDailyStatsAsync(startDate, today);
+            var statsDict = annualStats.ToDictionary(s => s.Date.Date, s => s);
+
+            double totalSeconds = annualStats.Sum(s => s.TotalFocusSeconds);
+            double totalHours = Math.Round(totalSeconds / 3600.0, 1);
+            int activeDays = annualStats.Count(s => s.TotalFocusSeconds > 0);
+            int streak = await _analyticsService.GetCurrentStreakDaysAsync();
+
+            HeatmapTotalHoursText.Text = $"{totalHours:0.0} hours in the past year";
+            HeatmapStatsText.Text = $"{activeDays} active days • {streak} day streak";
+
+            HeatmapGrid.Children.Clear();
+            HeatmapGrid.ColumnDefinitions.Clear();
+            HeatmapGrid.RowDefinitions.Clear();
+
+            HeatmapMonthsGrid.Children.Clear();
+            HeatmapMonthsGrid.ColumnDefinitions.Clear();
+
+            // 7 rows for Monday through Sunday
+            for (int r = 0; r < 7; r++)
+            {
+                HeatmapGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(11) });
+            }
+
+            // 52 columns for weeks
+            for (int c = 0; c < 52; c++)
+            {
+                HeatmapGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(11) });
+                HeatmapMonthsGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(14) }); // 11px cell + 3px spacing
+            }
+
+            bool isDark = this.ActualTheme != ElementTheme.Light;
+            var textSecondaryBrush = ThemeHelper.GetBrush("ShiftTextSecondaryBrush", "#94A3B8");
+
+            int lastMonth = -1;
+
+            for (int col = 0; col < 52; col++)
+            {
+                var colMonday = startDate.AddDays(col * 7);
+
+                // Add month label if month changed
+                if (colMonday.Month != lastMonth)
+                {
+                    lastMonth = colMonday.Month;
+                    var monthLabel = new TextBlock
+                    {
+                        Text = colMonday.ToString("MMM"),
+                        FontSize = 9,
+                        Foreground = textSecondaryBrush,
+                        HorizontalAlignment = HorizontalAlignment.Left
+                    };
+                    Grid.SetColumn(monthLabel, col);
+                    HeatmapMonthsGrid.Children.Add(monthLabel);
+                }
+
+                for (int row = 0; row < 7; row++)
+                {
+                    var cellDate = colMonday.AddDays(row);
+
+                    if (cellDate > today)
+                    {
+                        var futureBorder = new Border
+                        {
+                            Width = 11,
+                            Height = 11,
+                            CornerRadius = new CornerRadius(2),
+                            Background = new SolidColorBrush(Colors.Transparent),
+                            Opacity = 0.1
+                        };
+                        Grid.SetColumn(futureBorder, col);
+                        Grid.SetRow(futureBorder, row);
+                        HeatmapGrid.Children.Add(futureBorder);
+                        continue;
+                    }
+
+                    statsDict.TryGetValue(cellDate.Date, out var daySummary);
+                    int focusSecs = daySummary?.TotalFocusSeconds ?? 0;
+                    int completedShifts = daySummary?.CompletedSessions ?? 0;
+                    int focusMins = focusSecs / 60;
+
+                    Windows.UI.Color cellColor;
+                    if (isDark)
+                    {
+                        cellColor = focusMins switch
+                        {
+                            0 => ThemeHelper.ParseColor("#272B33"),
+                            <= 30 => ThemeHelper.ParseColor("#0E4429"),
+                            <= 60 => ThemeHelper.ParseColor("#006D32"),
+                            <= 120 => ThemeHelper.ParseColor("#26A641"),
+                            _ => ThemeHelper.ParseColor("#39D353")
+                        };
+                    }
+                    else
+                    {
+                        cellColor = focusMins switch
+                        {
+                            0 => ThemeHelper.ParseColor("#EBEDF0"),
+                            <= 30 => ThemeHelper.ParseColor("#9BE9A8"),
+                            <= 60 => ThemeHelper.ParseColor("#40C463"),
+                            <= 120 => ThemeHelper.ParseColor("#30A14E"),
+                            _ => ThemeHelper.ParseColor("#216E39")
+                        };
+                    }
+
+                    var cellBorder = new Border
+                    {
+                        Width = 11,
+                        Height = 11,
+                        CornerRadius = new CornerRadius(2),
+                        Background = new SolidColorBrush(cellColor)
+                    };
+
+                    string tooltip = focusMins > 0
+                        ? $"{cellDate:dddd, MMM d, yyyy}\n{focusMins} mins focus • {completedShifts} shifts"
+                        : $"{cellDate:dddd, MMM d, yyyy}\nNo focus time";
+
+                    ToolTipService.SetToolTip(cellBorder, tooltip);
+
+                    Grid.SetColumn(cellBorder, col);
+                    Grid.SetRow(cellBorder, row);
+                    HeatmapGrid.Children.Add(cellBorder);
+                }
+            }
         }
         catch { }
     }

@@ -6,84 +6,124 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:FlowWindows_App"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="Shift Mini"
+    Title="Flow Mini"
     mc:Ignorable="d">
 
-    <Window.SystemBackdrop>
-        <MicaBackdrop />
-    </Window.SystemBackdrop>
-
-    <!-- Floating Frameless Capsule Card -->
+    <!-- Floating Elegant Rounded Card (Zero Top Text, Centered Numerals, Generous Spacing) -->
     <Border x:Name="RootCard"
-            Background="{ThemeResource ShiftCardBgBrush}"
-            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            Background="#FFFFFF"
+            BorderBrush="#E2E8F0"
             BorderThickness="1"
             CornerRadius="16"
-            Padding="12,6"
+            Padding="14,10,14,14"
             PointerPressed="OnRootPointerPressed">
 
-        <Grid VerticalAlignment="Center">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
-            <!-- Left Drag Grip & Label -->
-            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Spacing="6" Margin="0,0,10,0">
-                <Image Source="ms-appx:///Assets/Square44x44Logo.scale-200.png" Width="16" Height="16" VerticalAlignment="Center" />
-                <TextBlock x:Name="MiniLabelText" Text="Shift" FontSize="11" FontWeight="SemiBold" Opacity="0.85" VerticalAlignment="Center" />
+            <!-- Top Row: Action Icons Pin-Aligned to Top Right (↺, 📊, ⋮) -->
+            <StackPanel Grid.Row="0"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top"
+                        Spacing="4"
+                        Margin="0,0,0,2">
+                <!-- Reset Session (↺) -->
+                <Button Width="22" Height="22" Padding="0"
+                        CornerRadius="11" Background="Transparent" BorderThickness="0"
+                        ToolTipService.ToolTip="Reset Session"
+                        Click="OnResetClicked">
+                    <FontIcon Glyph="&#xE72C;" FontSize="11" Foreground="#64748B" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Button>
+
+                <!-- Open Full App / Stats (📊) -->
+                <Button Width="22" Height="22" Padding="0"
+                        CornerRadius="11" Background="Transparent" BorderThickness="0"
+                        ToolTipService.ToolTip="Open Shift - Pomodoro"
+                        Click="OnOpenMainAppClicked">
+                    <FontIcon Glyph="&#xE9D9;" FontSize="11" Foreground="#64748B" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Button>
+
+                <!-- More Options / Menu (⋮) -->
+                <Button Width="22" Height="22" Padding="0"
+                        CornerRadius="11" Background="Transparent" BorderThickness="0"
+                        ToolTipService.ToolTip="Options">
+                    <FontIcon Glyph="&#xE712;" FontSize="11" Foreground="#64748B" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <Button.Flyout>
+                        <MenuFlyout>
+                            <MenuFlyoutItem Text="Skip Session" Click="OnSkipClicked">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE893;" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutItem Text="Reset Session" Click="OnResetClicked">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE72C;" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutSeparator />
+                            <MenuFlyoutItem Text="Open Full App" Click="OnOpenMainAppClicked">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE740;" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutItem Text="Close Mini Timer" Click="OnCloseClicked">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE711;" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
             </StackPanel>
 
-            <!-- Center Time Display & Cycle Dots -->
-            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="10">
+            <!-- Center Vertical Stack: Numerals, Dots, and Play Button Perfectly Coordinated -->
+            <StackPanel Grid.Row="1"
+                        Orientation="Vertical"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+
+                <!-- Crisp Tabular Numerals Centered with Balanced Vertical Spacing -->
                 <TextBlock x:Name="MiniTimeText"
                            Text="25:00"
-                           FontSize="20"
+                           FontSize="46"
                            FontWeight="Bold"
                            FontFamily="Segoe UI Variable Display, Segoe UI, sans-serif"
-                           VerticalAlignment="Center" />
+                           Foreground="#0F172A"
+                           HorizontalAlignment="Center"
+                           TextAlignment="Center"
+                           Margin="0,-4,0,8" />
 
-                <!-- 4 Cycle Dots -->
-                <StackPanel x:Name="MiniCycleDotsPanel" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
-                    <!-- Populated in code behind -->
+                <!-- Pomodoro Cycle Indicators (Generous Spacing, High Contrast) -->
+                <StackPanel x:Name="MiniCycleDotsPanel"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Spacing="4"
+                            Margin="0,0,0,12">
+                    <!-- Populated dynamically in code-behind -->
                 </StackPanel>
-            </StackPanel>
 
-            <!-- Right Controls: Green Play/Pause, Skip, Expand to Main, Close -->
-            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Spacing="3" Margin="8,0,0,0">
+                <!-- Circular Mint Play/Pause Action Button -->
                 <Button x:Name="MiniPlayPauseButton"
-                        Width="28" Height="28" Padding="0"
-                        CornerRadius="14"
-                        Background="{ThemeResource ShiftFlowGreenMutedBrush}"
-                        BorderBrush="Transparent"
+                        Width="40" Height="40" Padding="0"
+                        CornerRadius="20"
+                        Background="#E6F4ED"
+                        BorderThickness="0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
                         ToolTipService.ToolTip="Start / Pause"
                         Click="OnPlayPauseClicked">
                     <FontIcon x:Name="MiniPlayPauseIcon"
                               Glyph="&#xE768;"
-                              FontSize="11"
-                              Foreground="{ThemeResource ShiftFlowGreenBrush}" />
-                </Button>
-
-                <Button Width="26" Height="26" Padding="0"
-                        CornerRadius="13" Background="Transparent" BorderThickness="0"
-                        ToolTipService.ToolTip="Skip Session"
-                        Click="OnSkipClicked">
-                    <FontIcon Glyph="&#xE893;" FontSize="11" Opacity="0.65" />
-                </Button>
-
-                <Button Width="26" Height="26" Padding="0"
-                        CornerRadius="13" Background="Transparent" BorderThickness="0"
-                        ToolTipService.ToolTip="Open Shift - Pomodoro"
-                        Click="OnOpenMainAppClicked">
-                    <FontIcon Glyph="&#xE740;" FontSize="11" Opacity="0.65" />
-                </Button>
-
-                <Button Width="26" Height="26" Padding="0"
-                        CornerRadius="13" Background="Transparent" BorderThickness="0"
-                        ToolTipService.ToolTip="Close Mini Timer"
-                        Click="OnCloseClicked">
-                    <FontIcon Glyph="&#xE711;" FontSize="10" Opacity="0.65" />
+                              FontSize="15"
+                              Foreground="#15803D"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              Margin="1,0,0,0" />
                 </Button>
             </StackPanel>
         </Grid>

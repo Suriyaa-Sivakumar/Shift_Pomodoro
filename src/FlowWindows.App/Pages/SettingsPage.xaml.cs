@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Controls;
 using FlowWindows.Core.Enums;
 using FlowWindows.Core.Interfaces;
 using FlowWindows.Core.Models;
+using FlowWindows.WindowsIntegration;
 
 namespace FlowWindows_App.Pages;
 
@@ -46,6 +47,10 @@ public sealed partial class SettingsPage : Page
         _isLoading = true;
         _settings = await _repository.GetSettingsAsync();
 
+        // Appearance
+        ThemeModeCombo.SelectedIndex = Math.Clamp((int)_settings.Theme, 0, 2);
+
+        // Timer Configuration
         FocusDurationBox.Value = _settings.FocusMinutes;
         ShortBreakDurationBox.Value = _settings.ShortBreakMinutes;
         LongBreakDurationBox.Value = _settings.LongBreakMinutes;
@@ -53,17 +58,23 @@ public sealed partial class SettingsPage : Page
         AutoStartBreaksSwitch.IsOn = _settings.AutoStartBreaks;
         AutoStartFocusSwitch.IsOn = _settings.AutoStartFocus;
 
+        // Commitment
         CommitmentModeCombo.SelectedIndex = Math.Clamp((int)_settings.CommitmentMode, 0, 3);
 
+        // Sounds
         PlaySoundSwitch.IsOn = _settings.PlaySoundOnComplete;
         SoundVolumeSlider.Value = _settings.SoundVolumePercent;
-
         SetComboIndexByTag(FocusSoundCombo, (int)_settings.FocusCompleteSound);
         SetComboIndexByTag(BreakSoundCombo, (int)_settings.BreakCompleteSound);
 
+        // Taskbar, Window, Startup & Mini Timer
+        LaunchOnStartupSwitch.IsOn = StartupManager.IsStartupEnabled();
+        ShowTimerOnTaskbarSwitch.IsOn = _settings.ShowTimerOnTaskbar;
         MinimizeToTraySwitch.IsOn = _settings.MinimizeToTrayOnClose;
         WindowsNotificationsSwitch.IsOn = _settings.ShowWindowsNotifications;
         MiniTimerAlwaysOnTopSwitch.IsOn = _settings.MiniTimerAlwaysOnTop;
+        AutoOpenMiniTimerSwitch.IsOn = _settings.AutoOpenMiniTimerOnFocus;
+        AutoHideMiniTimerSwitch.IsOn = _settings.AutoHideMiniTimerOnBreak;
 
         _isLoading = false;
     }
@@ -94,6 +105,14 @@ public sealed partial class SettingsPage : Page
     {
         if (_isLoading || _repository == null) return;
 
+        // Theme
+        _settings.Theme = (ThemeMode)Math.Clamp(ThemeModeCombo.SelectedIndex, 0, 2);
+        if (this.XamlRoot?.Content is FrameworkElement root)
+        {
+            ThemeHelper.ApplyTheme(root, _settings.Theme);
+        }
+
+        // Timer Configuration
         _settings.FocusMinutes = (int)FocusDurationBox.Value;
         _settings.ShortBreakMinutes = (int)ShortBreakDurationBox.Value;
         _settings.LongBreakMinutes = (int)LongBreakDurationBox.Value;
@@ -101,18 +120,24 @@ public sealed partial class SettingsPage : Page
         _settings.AutoStartBreaks = AutoStartBreaksSwitch.IsOn;
         _settings.AutoStartFocus = AutoStartFocusSwitch.IsOn;
 
+        // Commitment
         _settings.CommitmentMode = (CommitmentModeLevel)CommitmentModeCombo.SelectedIndex;
+
+        // Sound
         _settings.PlaySoundOnComplete = PlaySoundSwitch.IsOn;
         _settings.SoundVolumePercent = (int)SoundVolumeSlider.Value;
-
         _settings.FocusCompleteSound = (SoundEffect)GetSelectedComboTag(FocusSoundCombo, (int)SoundEffect.Chime);
         _settings.BreakCompleteSound = (SoundEffect)GetSelectedComboTag(BreakSoundCombo, (int)SoundEffect.Bell);
 
+        // Taskbar, Window & Mini Timer
+        _settings.ShowTimerOnTaskbar = ShowTimerOnTaskbarSwitch.IsOn;
         _settings.MinimizeToTrayOnClose = MinimizeToTraySwitch.IsOn;
         _settings.ShowWindowsNotifications = WindowsNotificationsSwitch.IsOn;
         _settings.MiniTimerAlwaysOnTop = MiniTimerAlwaysOnTopSwitch.IsOn;
+        _settings.AutoOpenMiniTimerOnFocus = AutoOpenMiniTimerSwitch.IsOn;
+        _settings.AutoHideMiniTimerOnBreak = AutoHideMiniTimerSwitch.IsOn;
 
-        // Apply to active timer engine
+        // Apply immediately to active timer engine
         if (_timerEngine != null)
         {
             _timerEngine.CommitmentMode = _settings.CommitmentMode;
@@ -120,9 +145,24 @@ public sealed partial class SettingsPage : Page
             _timerEngine.SetCustomDuration(SessionType.Focus, TimeSpan.FromMinutes(_settings.FocusMinutes));
             _timerEngine.SetCustomDuration(SessionType.ShortBreak, TimeSpan.FromMinutes(_settings.ShortBreakMinutes));
             _timerEngine.SetCustomDuration(SessionType.LongBreak, TimeSpan.FromMinutes(_settings.LongBreakMinutes));
+            _timerEngine.SyncExternalTick();
         }
 
         await _repository.SaveSettingsAsync(_settings);
+    }
+
+    private async void OnStartupToggled(object sender, RoutedEventArgs e)
+    {
+        if (_isLoading || _repository == null) return;
+        bool enable = LaunchOnStartupSwitch.IsOn;
+        StartupManager.SetStartupEnabled(enable);
+        _settings.LaunchOnStartup = enable;
+        await _repository.SaveSettingsAsync(_settings);
+        SettingsStatusInfoBar.Severity = InfoBarSeverity.Success;
+        SettingsStatusInfoBar.Message = enable
+            ? "Shift configured to launch on Windows startup. You can also view or toggle this in Windows Task Manager > Startup apps."
+            : "Shift removed from Windows startup.";
+        SettingsStatusInfoBar.IsOpen = true;
     }
 
     private void OnPreviewFocusSoundClicked(object sender, RoutedEventArgs e)
@@ -145,15 +185,19 @@ public sealed partial class SettingsPage : Page
             var userDocs = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             var exportFolder = Path.Combine(userDocs, "FlowWindows_Exports");
             Directory.CreateDirectory(exportFolder);
-            var filePath = Path.Combine(exportFolder, $"flow_sessions_{DateTime.Now:yyyyMMdd_HHmmss}.csv");
+            var filePath = Path.Combine(exportFolder, $"shift_sessions_{DateTime.Now:yyyyMMdd_HHmmss}.csv");
 
-            await _reportService.ExportSessionsToCsvAsync(DateTimeOffset.UtcNow.AddYears(-5), DateTimeOffset.UtcNow.AddYears(1), filePath);
+            await _reportService.ExportSessionsToCsvAsync(DateTimeOffset.UtcNow.AddMonths(-12), DateTimeOffset.UtcNow, filePath);
 
-            ShowMessage($"Exported successfully to: {filePath}");
+            SettingsStatusInfoBar.Severity = InfoBarSeverity.Success;
+            SettingsStatusInfoBar.Message = $"Session history exported to: {filePath}";
+            SettingsStatusInfoBar.IsOpen = true;
         }
         catch (Exception ex)
         {
-            ShowMessage($"Export error: {ex.Message}", isError: true);
+            SettingsStatusInfoBar.Severity = InfoBarSeverity.Error;
+            SettingsStatusInfoBar.Message = $"Export failed: {ex.Message}";
+            SettingsStatusInfoBar.IsOpen = true;
         }
     }
 
@@ -165,15 +209,19 @@ public sealed partial class SettingsPage : Page
             var userDocs = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             var exportFolder = Path.Combine(userDocs, "FlowWindows_Exports");
             Directory.CreateDirectory(exportFolder);
-            var filePath = Path.Combine(exportFolder, $"flow_productivity_report_{DateTime.Now:yyyyMMdd_HHmmss}.html");
+            var filePath = Path.Combine(exportFolder, $"shift_report_{DateTime.Now:yyyyMMdd_HHmmss}.html");
 
-            await _reportService.ExportReportToHtmlAsync(DateTimeOffset.UtcNow.AddMonths(-3), DateTimeOffset.UtcNow.AddDays(1), filePath);
+            await _reportService.ExportReportToHtmlAsync(DateTimeOffset.UtcNow.AddMonths(-1), DateTimeOffset.UtcNow, filePath);
 
-            ShowMessage($"Report generated successfully: {filePath}");
+            SettingsStatusInfoBar.Severity = InfoBarSeverity.Success;
+            SettingsStatusInfoBar.Message = $"Printable HTML report generated at: {filePath}";
+            SettingsStatusInfoBar.IsOpen = true;
         }
         catch (Exception ex)
         {
-            ShowMessage($"Report error: {ex.Message}", isError: true);
+            SettingsStatusInfoBar.Severity = InfoBarSeverity.Error;
+            SettingsStatusInfoBar.Message = $"Report generation failed: {ex.Message}";
+            SettingsStatusInfoBar.IsOpen = true;
         }
     }
 
@@ -182,52 +230,31 @@ public sealed partial class SettingsPage : Page
         if (_repository == null) return;
         try
         {
-            var appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            var backupDir = Path.Combine(appData, "FlowWindows", "Backups");
-            Directory.CreateDirectory(backupDir);
-            var backupFile = Path.Combine(backupDir, $"flow_backup_{DateTime.Now:yyyyMMdd_HHmmss}.db");
+            var userDocs = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            var backupFolder = Path.Combine(userDocs, "FlowWindows_Backups");
+            Directory.CreateDirectory(backupFolder);
+            var backupPath = Path.Combine(backupFolder, $"shift_backup_{DateTime.Now:yyyyMMdd_HHmmss}.db");
 
-            await _repository.ExportDatabaseBackupAsync(backupFile);
-            ShowMessage($"Database backup created: {backupFile}");
+            await _repository.ExportDatabaseBackupAsync(backupPath);
+
+            SettingsStatusInfoBar.Severity = InfoBarSeverity.Success;
+            SettingsStatusInfoBar.Message = $"Local SQLite database backup saved to: {backupPath}";
+            SettingsStatusInfoBar.IsOpen = true;
         }
         catch (Exception ex)
         {
-            ShowMessage($"Backup error: {ex.Message}", isError: true);
+            SettingsStatusInfoBar.Severity = InfoBarSeverity.Error;
+            SettingsStatusInfoBar.Message = $"Backup failed: {ex.Message}";
+            SettingsStatusInfoBar.IsOpen = true;
         }
     }
 
-    private async void OnRestoreDatabaseClicked(object sender, RoutedEventArgs e)
+    private void OnRestoreDatabaseClicked(object sender, RoutedEventArgs e)
     {
         if (_repository == null) return;
-        try
-        {
-            var appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            var backupDir = Path.Combine(appData, "FlowWindows", "Backups");
-            if (Directory.Exists(backupDir))
-            {
-                var files = Directory.GetFiles(backupDir, "*.db");
-                if (files.Length > 0)
-                {
-                    var latest = files[^1];
-                    await _repository.RestoreDatabaseBackupAsync(latest);
-                    ShowMessage($"Restored latest backup from: {Path.GetFileName(latest)}");
-                    await LoadSettingsAsync();
-                    return;
-                }
-            }
-            ShowMessage("No backup files found in backup directory.", isError: true);
-        }
-        catch (Exception ex)
-        {
-            ShowMessage($"Restore error: {ex.Message}", isError: true);
-        }
-    }
 
-    private void ShowMessage(string message, bool isError = false)
-    {
-        SettingsStatusInfoBar.Severity = isError ? InfoBarSeverity.Error : InfoBarSeverity.Success;
-        SettingsStatusInfoBar.Message = message;
+        SettingsStatusInfoBar.Severity = InfoBarSeverity.Informational;
+        SettingsStatusInfoBar.Message = "Place a backup file into %USERPROFILE%\\Documents\\FlowWindows_Backups and click restore.";
         SettingsStatusInfoBar.IsOpen = true;
     }
 }
-

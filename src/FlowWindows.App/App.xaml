@@ -14,38 +14,42 @@
             <SolidColorBrush x:Key="ShiftFlowGreenBrush" Color="#2DB88F" />
             <SolidColorBrush x:Key="ShiftFlowGreenMutedBrush" Color="#1F3D34" />
             <SolidColorBrush x:Key="ShiftCardBgBrush" Color="#1E2023" />
-            <SolidColorBrush x:Key="ShiftSubtleBgBrush" Color="#1AFFFFFF" />
+            <SolidColorBrush x:Key="ShiftSubtleBgBrush" Color="#22FFFFFF" />
             <SolidColorBrush x:Key="ShiftTrackBrush" Color="#2A2D32" />
-            <SolidColorBrush x:Key="ShiftTextPrimaryBrush" Color="#F5F5F7" />
-            <SolidColorBrush x:Key="ShiftTextSecondaryBrush" Color="#8E8E93" />
+            <SolidColorBrush x:Key="ShiftTextPrimaryBrush" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="ShiftTextSecondaryBrush" Color="#CBD5E1" />
+            <SolidColorBrush x:Key="ShiftTextMutedBrush" Color="#94A3B8" />
 
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Dark">
                     <SolidColorBrush x:Key="ShiftFlowGreenBrush" Color="#2DB88F" />
                     <SolidColorBrush x:Key="ShiftFlowGreenMutedBrush" Color="#1F3D34" />
                     <SolidColorBrush x:Key="ShiftCardBgBrush" Color="#1E2023" />
-                    <SolidColorBrush x:Key="ShiftSubtleBgBrush" Color="#1AFFFFFF" />
+                    <SolidColorBrush x:Key="ShiftSubtleBgBrush" Color="#22FFFFFF" />
                     <SolidColorBrush x:Key="ShiftTrackBrush" Color="#2A2D32" />
-                    <SolidColorBrush x:Key="ShiftTextPrimaryBrush" Color="#F5F5F7" />
-                    <SolidColorBrush x:Key="ShiftTextSecondaryBrush" Color="#8E8E93" />
+                    <SolidColorBrush x:Key="ShiftTextPrimaryBrush" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="ShiftTextSecondaryBrush" Color="#CBD5E1" />
+                    <SolidColorBrush x:Key="ShiftTextMutedBrush" Color="#94A3B8" />
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Light">
-                    <SolidColorBrush x:Key="ShiftFlowGreenBrush" Color="#1E5E4E" />
-                    <SolidColorBrush x:Key="ShiftFlowGreenMutedBrush" Color="#E5EFEA" />
+                    <SolidColorBrush x:Key="ShiftFlowGreenBrush" Color="#10B981" />
+                    <SolidColorBrush x:Key="ShiftFlowGreenMutedBrush" Color="#E6F7F2" />
                     <SolidColorBrush x:Key="ShiftCardBgBrush" Color="#FFFFFF" />
-                    <SolidColorBrush x:Key="ShiftSubtleBgBrush" Color="#0A000000" />
-                    <SolidColorBrush x:Key="ShiftTrackBrush" Color="#EAEAEA" />
-                    <SolidColorBrush x:Key="ShiftTextPrimaryBrush" Color="#1C1C1E" />
-                    <SolidColorBrush x:Key="ShiftTextSecondaryBrush" Color="#6E6E73" />
+                    <SolidColorBrush x:Key="ShiftSubtleBgBrush" Color="#0D000000" />
+                    <SolidColorBrush x:Key="ShiftTrackBrush" Color="#E5E7EB" />
+                    <SolidColorBrush x:Key="ShiftTextPrimaryBrush" Color="#0F172A" />
+                    <SolidColorBrush x:Key="ShiftTextSecondaryBrush" Color="#475569" />
+                    <SolidColorBrush x:Key="ShiftTextMutedBrush" Color="#64748B" />
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Default">
                     <SolidColorBrush x:Key="ShiftFlowGreenBrush" Color="#2DB88F" />
                     <SolidColorBrush x:Key="ShiftFlowGreenMutedBrush" Color="#1F3D34" />
                     <SolidColorBrush x:Key="ShiftCardBgBrush" Color="#1E2023" />
-                    <SolidColorBrush x:Key="ShiftSubtleBgBrush" Color="#1AFFFFFF" />
+                    <SolidColorBrush x:Key="ShiftSubtleBgBrush" Color="#22FFFFFF" />
                     <SolidColorBrush x:Key="ShiftTrackBrush" Color="#2A2D32" />
-                    <SolidColorBrush x:Key="ShiftTextPrimaryBrush" Color="#F5F5F7" />
-                    <SolidColorBrush x:Key="ShiftTextSecondaryBrush" Color="#8E8E93" />
+                    <SolidColorBrush x:Key="ShiftTextPrimaryBrush" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="ShiftTextSecondaryBrush" Color="#CBD5E1" />
+                    <SolidColorBrush x:Key="ShiftTextMutedBrush" Color="#94A3B8" />
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>

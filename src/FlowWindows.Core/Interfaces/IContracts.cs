@@ -63,6 +63,8 @@ public interface ITimerEngine
     void SetCustomDuration(SessionType type, TimeSpan duration);
     void ApplyPreset(TimerPreset preset);
     void SyncExternalTick();
+    void PreviousCycle();
+    void NextCycle();
 }
 
 public interface IRepository
@@ -153,6 +155,7 @@ public interface ITaskService
     Task RemoveTaskAsync(string taskId);
     Task ToggleTaskCompletedAsync(string taskId);
     Task RecordTimeOnTaskAsync(string taskId, int minutes);
+    Task ClearCompletedTasksAsync();
 }
 
 public interface IGoalsService
@@ -160,6 +163,9 @@ public interface IGoalsService
     Task<List<GoalRecord>> GetActiveGoalsAsync();
     Task CheckAndProgressGoalsAsync(SessionRecord completedSession);
     Task<List<Achievement>> CheckAchievementsAsync();
+    Task AddOrUpdateGoalAsync(GoalRecord goal);
+    Task RemoveGoalAsync(string goalId);
+    Task ResetGoalProgressAsync(string goalId);
 }
 
 public interface IWindowsIntegrationService

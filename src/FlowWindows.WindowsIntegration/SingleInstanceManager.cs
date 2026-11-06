@@ -16,10 +16,15 @@ public class SingleInstanceManager : IDisposable
     private CancellationTokenSource? _cts;
 
     public event Action? InstanceActivated;
+    public event Action? MiniTimerToggleRequested;
 
-    public bool TryAcquire(Action onActivatedCallback)
+    public bool TryAcquire(Action onActivatedCallback, Action? onMiniTimerToggleCallback = null)
     {
         InstanceActivated += onActivatedCallback;
+        if (onMiniTimerToggleCallback != null)
+        {
+            MiniTimerToggleRequested += onMiniTimerToggleCallback;
+        }
 
         try
         {
@@ -38,7 +43,7 @@ public class SingleInstanceManager : IDisposable
         if (!_hasHandle)
         {
             // Another instance may be running. Attempt to send activation signal through named pipe
-            bool notified = SendActivationSignal();
+            bool notified = SendActivationSignal("ACTIVATE");
             if (notified)
             {
                 // Active instance successfully notified
@@ -55,14 +60,14 @@ public class SingleInstanceManager : IDisposable
         return true;
     }
 
-    private static bool SendActivationSignal()
+    public static bool SendActivationSignal(string command = "ACTIVATE")
     {
         try
         {
             using var client = new NamedPipeClientStream(".", PipeName, PipeDirection.Out);
             client.Connect(500);
             using var writer = new StreamWriter(client);
-            writer.WriteLine("ACTIVATE");
+            writer.WriteLine(command);
             writer.Flush();
             return true;
         }
@@ -82,7 +87,11 @@ public class SingleInstanceManager : IDisposable
                 await server.WaitForConnectionAsync(token);
                 using var reader = new StreamReader(server);
                 var message = await reader.ReadLineAsync(token);
-                if (message == "ACTIVATE")
+                if (message == "TOGGLE_MINI")
+                {
+                    MiniTimerToggleRequested?.Invoke();
+                }
+                else if (message == "ACTIVATE")
                 {
                     InstanceActivated?.Invoke();
                 }

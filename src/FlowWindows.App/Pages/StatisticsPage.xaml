@@ -8,7 +8,7 @@
     mc:Ignorable="d">
 
     <ScrollViewer Padding="20,16" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <StackPanel Spacing="18" MaxWidth="560" HorizontalAlignment="Stretch">
+        <StackPanel Spacing="18" MaxWidth="760" HorizontalAlignment="Stretch">
             <!-- Top Bar: Back Button & Segmented Period Control [ D | W | M | Y ] -->
             <Grid>
                 <!-- Back to Timer Button -->
@@ -18,7 +18,7 @@
                         HorizontalAlignment="Left"
                         ToolTipService.ToolTip="Back to Timer"
                         Click="OnBackClicked">
-                    <FontIcon Glyph="&#xE72B;" FontSize="14" />
+                    <FontIcon Glyph="&#xE72B;" FontSize="14" Foreground="{ThemeResource ShiftTextPrimaryBrush}" />
                 </Button>
 
                 <!-- Flow Segmented Switcher [ D | W | M | Y ] -->
@@ -44,20 +44,21 @@
                             Width="28" Height="28" Padding="0"
                             CornerRadius="14" Background="Transparent" BorderThickness="0"
                             Click="OnPrevPeriodClicked">
-                        <FontIcon Glyph="&#xE76B;" FontSize="10" Opacity="0.6" />
+                        <FontIcon Glyph="&#xE76B;" FontSize="11" Foreground="{ThemeResource ShiftTextSecondaryBrush}" />
                     </Button>
 
                     <TextBlock x:Name="DateRangeSummaryText"
                                Text="March 13–19, 2026 — 42 Shifts"
                                FontSize="16"
                                FontWeight="SemiBold"
+                               Foreground="{ThemeResource ShiftTextPrimaryBrush}"
                                VerticalAlignment="Center" />
 
                     <Button x:Name="NextPeriodBtn"
                             Width="28" Height="28" Padding="0"
                             CornerRadius="14" Background="Transparent" BorderThickness="0"
                             Click="OnNextPeriodClicked">
-                        <FontIcon Glyph="&#xE76C;" FontSize="10" Opacity="0.6" />
+                        <FontIcon Glyph="&#xE76C;" FontSize="11" Foreground="{ThemeResource ShiftTextSecondaryBrush}" />
                     </Button>
                 </StackPanel>
             </Grid>
@@ -86,25 +87,96 @@
 
                 <Border Grid.Column="0" Background="{ThemeResource ShiftCardBgBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="12" Padding="12">
                     <StackPanel Spacing="2">
-                        <TextBlock Text="TOTAL TIME" FontSize="10" FontWeight="Bold" Opacity="0.6" CharacterSpacing="50" />
+                        <TextBlock Text="TOTAL TIME" FontSize="10" FontWeight="Bold" Foreground="{ThemeResource ShiftTextSecondaryBrush}" CharacterSpacing="50" />
                         <TextBlock x:Name="KpiTotalHours" Text="0.0 hrs" FontSize="20" FontWeight="Bold" Foreground="{ThemeResource ShiftFlowGreenBrush}" />
                     </StackPanel>
                 </Border>
 
                 <Border Grid.Column="1" Background="{ThemeResource ShiftCardBgBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="12" Padding="12">
                     <StackPanel Spacing="2">
-                        <TextBlock Text="SHIFTS" FontSize="10" FontWeight="Bold" Opacity="0.6" CharacterSpacing="50" />
-                        <TextBlock x:Name="KpiCompletedCount" Text="0" FontSize="20" FontWeight="Bold" />
+                        <TextBlock Text="SHIFTS" FontSize="10" FontWeight="Bold" Foreground="{ThemeResource ShiftTextSecondaryBrush}" CharacterSpacing="50" />
+                        <TextBlock x:Name="KpiCompletedCount" Text="0" FontSize="20" FontWeight="Bold" Foreground="{ThemeResource ShiftTextPrimaryBrush}" />
                     </StackPanel>
                 </Border>
 
                 <Border Grid.Column="2" Background="{ThemeResource ShiftCardBgBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="12" Padding="12">
                     <StackPanel Spacing="2">
-                        <TextBlock Text="STREAK" FontSize="10" FontWeight="Bold" Opacity="0.6" CharacterSpacing="50" />
-                        <TextBlock x:Name="KpiStreakDays" Text="0 days" FontSize="20" FontWeight="Bold" />
+                        <TextBlock Text="STREAK" FontSize="10" FontWeight="Bold" Foreground="{ThemeResource ShiftTextSecondaryBrush}" CharacterSpacing="50" />
+                        <TextBlock x:Name="KpiStreakDays" Text="0 days" FontSize="20" FontWeight="Bold" Foreground="{ThemeResource ShiftTextPrimaryBrush}" />
                     </StackPanel>
                 </Border>
             </Grid>
+
+            <!-- Annual Contribution Heatmap (GitHub Style) -->
+            <Border Background="{ThemeResource ShiftCardBgBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="16"
+                    Padding="18,16"
+                    Margin="0,4,0,8">
+                <StackPanel Spacing="12">
+                    <Grid>
+                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <FontIcon Glyph="&#xE782;" FontSize="14" Foreground="{ThemeResource ShiftFlowGreenBrush}" />
+                            <TextBlock x:Name="HeatmapHeaderTitle" Text="Annual Focus Heatmap" FontSize="15" FontWeight="SemiBold" Foreground="{ThemeResource ShiftTextPrimaryBrush}" />
+                        </StackPanel>
+                        <TextBlock x:Name="HeatmapTotalHoursText" Text="0.0 hours in the past year" FontSize="12" Foreground="{ThemeResource ShiftTextSecondaryBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                    </Grid>
+
+                    <!-- Horizontal ScrollViewer for the 52 weeks -->
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Padding="0,2,0,6">
+                        <StackPanel Spacing="4">
+                            <!-- Month Labels Row -->
+                            <Grid x:Name="HeatmapMonthsGrid" Margin="28,0,0,0" Height="14">
+                                <!-- 52 columns matching the heatmap grid -->
+                            </Grid>
+
+                            <!-- Heatmap Rows (Mon..Sun) + Day labels -->
+                            <Grid ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="20" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Weekday Labels (Mon, Wed, Fri) -->
+                                <Grid Grid.Column="0" RowSpacing="3" VerticalAlignment="Center">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="11" />
+                                        <RowDefinition Height="11" />
+                                        <RowDefinition Height="11" />
+                                        <RowDefinition Height="11" />
+                                        <RowDefinition Height="11" />
+                                        <RowDefinition Height="11" />
+                                        <RowDefinition Height="11" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Text="M" FontSize="9" Foreground="{ThemeResource ShiftTextSecondaryBrush}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,2,0" />
+                                    <TextBlock Grid.Row="2" Text="W" FontSize="9" Foreground="{ThemeResource ShiftTextSecondaryBrush}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,2,0" />
+                                    <TextBlock Grid.Row="4" Text="F" FontSize="9" Foreground="{ThemeResource ShiftTextSecondaryBrush}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,2,0" />
+                                </Grid>
+
+                                <!-- 52 Weeks Grid -->
+                                <Grid x:Name="HeatmapGrid" Grid.Column="1" ColumnSpacing="3" RowSpacing="3">
+                                    <!-- Populated dynamically: 52 columns x 7 rows -->
+                                </Grid>
+                            </Grid>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <!-- Heatmap Footer: Stats & Legend -->
+                    <Grid Margin="0,2,0,0">
+                        <TextBlock x:Name="HeatmapStatsText" Text="0 active days • 0 current streak" FontSize="11" Foreground="{ThemeResource ShiftTextSecondaryBrush}" VerticalAlignment="Center" />
+                        <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <TextBlock Text="Less" FontSize="10" Foreground="{ThemeResource ShiftTextSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,4,0" />
+                            <Border Width="11" Height="11" CornerRadius="2" Background="#272B33" ToolTipService.ToolTip="No focus time" />
+                            <Border Width="11" Height="11" CornerRadius="2" Background="#0E4429" ToolTipService.ToolTip="1 - 30 minutes" />
+                            <Border Width="11" Height="11" CornerRadius="2" Background="#006D32" ToolTipService.ToolTip="31 - 60 minutes" />
+                            <Border Width="11" Height="11" CornerRadius="2" Background="#26A641" ToolTipService.ToolTip="61 - 120 minutes" />
+                            <Border Width="11" Height="11" CornerRadius="2" Background="#39D353" ToolTipService.ToolTip="120+ minutes" />
+                            <TextBlock Text="More" FontSize="10" Foreground="{ThemeResource ShiftTextSecondaryBrush}" VerticalAlignment="Center" Margin="4,0,0,0" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
         </StackPanel>
     </ScrollViewer>
 </Page>

@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Shapes;
+using FlowWindows.Core.Common;
 using FlowWindows.Core.Enums;
 
 namespace FlowWindows_App.Controls;
@@ -29,13 +30,13 @@ public sealed partial class CircularTimerControl : UserControl
         _sessionType = type;
 
         // Update text
-        TimeText.Text = $"{(int)remaining.TotalMinutes:D2}:{remaining.Seconds:D2}";
+        TimeText.Text = TimeFormatHelper.FormatTimer(remaining);
         SessionTypeLabel.Text = type switch
         {
             SessionType.Focus => "FOCUS SESSION",
             SessionType.ShortBreak => "SHORT BREAK",
             SessionType.LongBreak => "LONG BREAK",
-            _ => "FLOW"
+            _ => "SHIFT"
         };
 
         if (!string.IsNullOrWhiteSpace(tagOrTask))

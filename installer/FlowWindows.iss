@@ -1,7 +1,7 @@
 ; Script generated for Shift - Pomodoro Installer
 #define MyAppName "Shift - Pomodoro"
 #define MyAppVersion "1.0.0"
-#define MyAppPublisher "Shift Pomodoro Community"
+#define MyAppPublisher "Shift Pomodoro"
 #define MyAppURL "https://github.com/Shift_Pomodoro"
 #define MyAppExeName "FlowWindows.App.exe"
 #define SourceDir "..\dist\FlowWindows-x64"
@@ -14,7 +14,7 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-DefaultDirName={autopf}\Shift - Pomodoro
+DefaultDirName={autopf}\{#MyAppName}
 DisableProgramGroupPage=yes
 OutputBaseFilename=Shift-Pomodoro-Setup-x64
 OutputDir=..\dist\installer
@@ -23,8 +23,13 @@ SolidCompression=yes
 ArchitecturesInstallIn64BitMode=x64compatible
 ArchitecturesAllowed=x64compatible
 PrivilegesRequired=lowest
+PrivilegesRequiredOverridesAllowed=dialog
 WizardStyle=modern
 SetupIconFile=..\dist\FlowWindows-x64\Assets\AppIcon.ico
+UninstallDisplayIcon={app}\Assets\AppIcon.ico
+UninstallDisplayName={#MyAppName}
+CloseApplications=yes
+RestartApplications=no
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -37,8 +42,8 @@ Source: "{#SourceDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs 
 ; Note: User data is kept in %LOCALAPPDATA%\FlowWindows and is never overwritten or deleted by installer
 
 [Icons]
-Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\Assets\AppIcon.ico"
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\Assets\AppIcon.ico"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
